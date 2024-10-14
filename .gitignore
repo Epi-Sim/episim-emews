@@ -1,0 +1,4 @@
+experiments/*
+venv
+python/__pycache__/*
+ext/EQ-Py/__pycache__/*

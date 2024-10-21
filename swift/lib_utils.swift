@@ -91,8 +91,8 @@ import os
 import json
 from postprocessing import postprocess_obj
 
-instance_folder       = '%s'
-data_folder           = '%s'
+instance_folder = '%s'
+data_folder     = '%s'
 wf_config_fname = '%s'
 
 output_fname = postprocess_obj(instance_folder, data_folder, wf_config_fname)

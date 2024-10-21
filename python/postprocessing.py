@@ -73,8 +73,20 @@ def scale_by_population(sim_ds, instance_folder, data_folder, scale=1e5, **kwarg
     return sim_ds
 
 
+"""
+Example of a correct postprocessing function defintion
+the function should acept the following arguments
+- sim_ds: xarray with simulation output
+- instance_folder: string (path to the instance folder)
+- data_folder: string (path to the data folder)
+- **kwargs: dict (additional arguments as key:value pairs)
+"""
+def dummy_postprocessing(sim_ds, instance_folder, data_folder, **kwargs):
+    return sim_ds
+
 
 postprocessing_map = {
+    "dummy_postprocessing": dummy_postprocessing,
     "scale_by_population": scale_by_population,
     "aggregate_simulation": aggregate_patches
 }

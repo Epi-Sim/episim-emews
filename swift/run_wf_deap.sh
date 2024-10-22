@@ -149,7 +149,7 @@ SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
-               -w=${WORKFLOW_JSON:}
+               -w=${WORKFLOW_JSON}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
                -seed=${SEED}  -sigma=${SIGMA}"

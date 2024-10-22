@@ -8,7 +8,7 @@ set -eu
 
 if [ "$#" -ne 7 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord3)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord3)"
   exit 1
 fi
 
@@ -25,7 +25,7 @@ BASE_PARAMS_DEAP=$5
 STRATEGY=$6
 CLUSTER_NAME=$7
 
-if [[ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]]; then
+if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     echo "Incorrect Strategy ${STRATEGY}. Posible optiones a deap_ga and deap_cmaes"
     exit 1;
 fi
@@ -37,10 +37,10 @@ mkdir -p ${TURBINE_OUTPUT}
 
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
-WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow.json"
+WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
 
-##############################################
+####################################i##########
 # Copying data folder into turbine output
 ##############################################
 if [ ! -d "${BASE_DATA_FOLDER}" ]; then
@@ -148,7 +148,8 @@ SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 # EQ/Py location
 EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 
-CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} 
+CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
+               -w=${WORKFLOW_JSON:}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
                -seed=${SEED}  -sigma=${SIGMA}"

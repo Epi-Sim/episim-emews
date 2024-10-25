@@ -6,7 +6,7 @@
         "steps": [
             {
                 "function": "scale_by_population",
-                "scale": 1e-5
+                "scale": 1e5
             },
             {
                 "function": "aggregate_simulation",
@@ -18,7 +18,7 @@
         "function": "fit_epicurves",
         "input_fname":  "obs_agg_scaled.nc",
         "parameters": {
-            "epidata_fname": "casos_hosp_def_edad_provres_new.nc",
+            "epidata_fname": "casos_hosp_def_edad_provres_new_scaled.nc",
             "epi_variable":  "new_deaths",
             "output_fname": "RMSE.nc"
         }

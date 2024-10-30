@@ -16,10 +16,11 @@
     },
     "evaluation": {
         "function": "fit_epicurves",
-        "input_fname":  "obs_agg_scaled.nc",
+        "input_fname":  "observables.nc",
         "parameters": {
-            "epidata_fname": "casos_hosp_def_edad_provres_new_scaled.nc",
+            "epidata_fname": "casos_hosp_def_edad_provres_new.nc",
             "epi_variable":  "new_deaths",
+            "scale": 1e5,
             "output_fname": "RMSE.nc"
         }
     }

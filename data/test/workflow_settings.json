@@ -15,7 +15,7 @@
         ]
     },
     "evaluation": {
-        "function": "dummy_evalaute",
+        "function": "dummy_evaluate",
         "input_fname":  "obs_agg_scaled.nc",
         "parameters": {
             "epidata_fname": "real_obserbables.nc",

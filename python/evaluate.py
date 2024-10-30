@@ -14,13 +14,20 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
                   epidata_fname=None, epi_variable=None,
                   level='global', **kwargs):
     
-    
+
     config_fname = os.path.join(instance_folder, "config.json")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
     
     start_date = config_dict['simulation']['start_date']
     end_date = config_dict['simulation']['end_date']
+
+    pop_fname = config_dict["data"]["metapopulation_data_filename"]
+    pop_fname = os.path.join(data_folder, pop_fname)
+
+    df_pop = pd.read_csv(pop_fname)
+
+    scale = kwargs["scale"]
 
     epidata_fname = os.path.join(data_folder, epidata_fname)
     epidata_ds = xr.load_dataset(epidata_fname)
@@ -36,19 +43,22 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
     output_fname  = os.path.join(output_folder, kwargs["output_fname"])
 
     if level == 'global':
+        col_pop = 'Total'
         epidata_xa = epidata_xa.sum(['G', 'M'])
         simdata_xa = simdata_xa.sum(['G', 'M'])
+        epidata_xa = epidata_xa*scale/df_pop.loc[:,col_pop].sum()
+        simdata_xa = simdata_xa*scale/df_pop.loc[:,col_pop].sum()
         rmse_xa = xs.rmse(simdata_xa, epidata_xa, dim = 'T')
         rmse_xa.to_netcdf(output_fname)
         return float(rmse_xa)
 
-def dummy_evalaute(sim_xa, instance_folder, data_folder, **kwargs):
+def dummy_evaluate(sim_xa, instance_folder, data_folder, **kwargs):
     return 0
 
 #################################################################
 
 evaluate_function_map = {
-    "dummy_evalaute": dummy_evalaute,
+    "dummy_evaluate": dummy_evaluate,
     "fit_epicurves": fit_epicurves
 }
 

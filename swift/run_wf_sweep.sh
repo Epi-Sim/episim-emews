@@ -80,9 +80,9 @@ fi
 # Computing Resources
 export PROCS=4
 export PROJECT=bsc08
-export WALLTIME=00:8:00
+export WALLTIME=02:00:00
 export QUEUE=gp_bscls
-export TURBINE_SBATCH_ARGS="--qos=gp_debug"
+export TURBINE_SBATCH_ARGS="--qos=gp_bscls"
 export TURBINE_JOBNAME="${EXPID}_job"
 
 #################################################################

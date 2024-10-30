@@ -13,7 +13,7 @@ source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 #################################################################
 
-BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/test"
+BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/mitma"
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config.json"

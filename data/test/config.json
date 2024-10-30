@@ -1,8 +1,8 @@
 {
 	"simulation": {
 		"start_date": "2020-02-09",
-		"end_date": "2020-02-14",
-		"save_full_output": true,
+		"end_date": "2020-05-31",
+		"save_full_output": false,
 		"save_observables": true,
 		"save_time_step": null,
 		"output_folder": "output",

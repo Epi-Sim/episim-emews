@@ -141,6 +141,7 @@ ITERATIONS=10
 NUM_POPULATION=5
 SEED=1234
 SIGMA=1
+NUM_OBJECTIVES=3
 
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
@@ -152,7 +153,7 @@ CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
                -w=${WORKFLOW_JSON}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
-               -seed=${SEED}  -sigma=${SIGMA}"
+               -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
 
 swift-t -p  -n $PROCS $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
 

@@ -1,5 +1,5 @@
-STRATEGY="deap_cmaes"
-EXPID="test_${STRATEGY}"
+STRATEGY="deap_ga"
+EXPID="test_${STRATEGY}_mo"
 
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
@@ -13,14 +13,14 @@ source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 #################################################################
 
-BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/mitma"
+BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/test"
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config.json"
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 
-BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"
-WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
+BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings_test.json"
+WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings_test.json"
 
 BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams.json"
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
@@ -44,10 +44,11 @@ export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # Parameters for DEAP algorithm
-GENERATIONS=5
+GENERATIONS=1
 POPULATION=5
 SEED=1234
 SIGMA=1
+NUM_OBJECTIVES=2
 
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 SWIFT_EXE="${SWIFT_PATH}/run_wf_deap.swift"
@@ -55,7 +56,8 @@ SWIFT_EXE="${SWIFT_PATH}/run_wf_deap.swift"
 # Setting the command line
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG}
                 -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
-                -np=${POPULATION}  -ni=${GENERATIONS}  -seed=${SEED}  -sigma=${SIGMA}"
+                -np=${POPULATION}  -ni=${GENERATIONS}  -seed=${SEED}  -sigma=${SIGMA}
+                -nobjs=${NUM_OBJECTIVES}"
 
 
 swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_EXE  $CMD_LINE_ARGS

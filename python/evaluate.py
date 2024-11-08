@@ -50,7 +50,14 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
         simdata_xa = simdata_xa*scale/df_pop.loc[:,col_pop].sum()
         rmse_xa = xs.rmse(simdata_xa, epidata_xa, dim = 'T')
         rmse_xa.to_netcdf(output_fname)
-        return float(rmse_xa)
+        rmse = []
+        for var in epi_variable:
+            rmse.append(str(float(rmse_xa[var])))
+
+        rmse = ','.join(rmse)
+        return rmse
+    else:
+        return 'ERROR EVALUATE'
 
 def dummy_evaluate(sim_xa, instance_folder, data_folder, **kwargs):
     return 0

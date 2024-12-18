@@ -54,7 +54,8 @@ config_path=$(realpath ${4})
 #     MODEL_CMD="julia --project=${MODEL_BASH_PATH} ${MODEL_BASH_PATH}/src/run.jl"
 # fi
 
-arg_array=("run" "-d $data_path" "-c $config_path" "-i $instance_directory")
+arg_array=("-e MMCACovid19" "run" "-d $data_path" "-c $config_path" "-i $instance_directory")
+#arg_array=("run" "-d $data_path" "-c $config_path" "-i $instance_directory")
 COMMAND="$MODEL_CMD ${arg_array[@]}"
 
 echo $COMMAND > /tmp/debug

@@ -25,6 +25,8 @@ def update_params(params_dict, update_dict):
         s_ea = update_dict["scale_ea"]
         nu_g = 1.0/(t_inc * (1.0 - s_ea))
         params_dict["epidemic_params"]["ηᵍ"] = [nu_g] * G
+    if "ηᵍY" in update_dict:
+        params_dict["epidemic_params"]["ηᵍ"] = [update_dict["ηᵍY"], update_dict["ηᵍM"], update_dict["ηᵍO"]]
     # Mapping epi_param αᵍ
     if "αᵍ" in update_dict:
         a = update_dict["αᵍ"]
@@ -38,6 +40,8 @@ def update_params(params_dict, update_dict):
         n2 = 1.0/(t_inc * s_ea)
         n3 = 1.0/(t_inc * s_ea)
         params_dict["epidemic_params"]["αᵍ"] = [n1, n2, n3]
+    if "αᵍY" in update_dict:
+        params_dict["epidemic_params"]["αᵍ"] = [update_dict["αᵍY"], update_dict["αᵍM"], update_dict["αᵍO"]]
 
     # Mapping epi_param μᵍ
     if "μᵍ" in update_dict:
@@ -46,6 +50,9 @@ def update_params(params_dict, update_dict):
     elif "τᵢ" in update_dict:
         ti = update_dict["τᵢ"]
         params_dict["epidemic_params"]["μᵍ"] = [1.0, 1.0/ti, 1.0/ti]
+    if "μᵍY" in update_dict:
+        params_dict["epidemic_params"]["μᵍ"] = [update_dict["μᵍY"], update_dict["μᵍM"], update_dict["μᵍO"]]
+    
     #arreglar esto
     if "ϕs" in update_dict:
         if isinstance(update_dict["ϕs"],list):

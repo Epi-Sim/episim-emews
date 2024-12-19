@@ -12,7 +12,7 @@ import xskillscore as xs
 
 def fit_epicurves(simdata_ds, instance_folder, data_folder, 
                   epidata_fname=None, epi_variable=None,
-                  level='global', **kwargs):
+                  level='age', **kwargs):
     
 
     config_fname = os.path.join(instance_folder, "config.json")
@@ -54,6 +54,24 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
         for var in epi_variable:
             rmse.append(str(float(rmse_xa[var])))
 
+        rmse = ','.join(rmse)
+        return rmse
+    elif level == 'age':
+        epidata_xa = epidata_xa.sum(['M'])
+        simdata_xa = simdata_xa.sum(['M'])
+        G_dic = epidata_xa.coords['G'].values
+        for i in range(len(G_dic)):
+            age = G_dic[i]
+            epidata_xa = epidata_xa.loc[age,:]*scale/df_pop.loc[:,age].sum()
+            simdata_xa = simdata_xa.loc[age,:]*scale/df_pop.loc[:,age].sum()
+        rmse_xa = xs.rmse(simdata_xa, epidata_xa, dim = 'T')
+        rmse_xa.to_netcdf(output_fname)
+        rmse = []
+        ages = ['Y','M']
+        i = 0
+        for var in epi_variable:
+            rmse.append(str(float(rmse_xa[var].loc[ages[i]])))
+            i = i+1
         rmse = ','.join(rmse)
         return rmse
     else:

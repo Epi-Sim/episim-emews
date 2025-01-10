@@ -53,6 +53,8 @@ def update_params(params_dict, update_dict):
     if "μᵍY" in update_dict:
         params_dict["epidemic_params"]["μᵍ"] = [update_dict["μᵍY"], update_dict["μᵍM"], update_dict["μᵍO"]]
     
+    if "γᵍY" in update_dict:
+        params_dict["epidemic_params"]["γᵍ"][0] = update_dict["γᵍY"]
     #arreglar esto
     if "ϕs" in update_dict:
         if isinstance(update_dict["ϕs"],list):

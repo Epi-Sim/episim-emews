@@ -1,0 +1,114 @@
+[
+	{
+		"name": "βᴵ", 
+		"type": "float",
+		"lower": 0.06,
+		"upper": 0.09,
+		"sigma": 0.02,
+		"args": {"loc": 0.06, "scale": 0.03}
+	},
+	{
+		"name": "βᴬ", 
+		"type": "float", 
+		"lower": 0.02,
+		"upper": 0.05,
+		"sigma": 0.01,
+		"args": {"loc": 0.02, "scale": 0.03}
+	},
+	{
+		"name": "ηᵍY", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "ηᵍM", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "ηᵍO", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}}
+	},
+	{
+		"name": "αᵍY", 
+		"type": "float",
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "αᵍM", 
+		"type": "float",
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "αᵍO", 
+		"type": "float",
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "μᵍY", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 1.0,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.9}
+	},
+	{
+		"name": "μᵍM", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "μᵍO", 
+		"type": "float", 
+		"lower": 0.1,
+		"upper": 0.9,
+		"sigma": 0.1,
+		"args": {"loc": 0.1, "scale": 0.8}
+	},
+	{
+		"name": "γᵍY", 
+		"type": "float", 
+		"lower": 0.0,
+		"upper": 0.01,
+		"sigma": 0.001,
+		"args": {"loc": 0.0, "scale": 0.01}
+	},
+	{
+		"name": "δs", 
+		"type": "float", 
+		"lower": 0.0,
+		"upper": 0.5,
+		"sigma": 0.25,
+		"args": {"loc": 0, "scale": 0.5}
+	},
+	{
+		"name": "ϕs", 
+		"type": "float", 
+		"lower": 0.0,
+		"upper": 0.2,
+		"sigma": 0.1,
+		"args": {"loc": 0, "scale": 0.2}
+	}
+]

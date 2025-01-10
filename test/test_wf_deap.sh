@@ -22,8 +22,8 @@ CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings_test.json"
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings_test.json"
 
-BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams.json"
-PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
+BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams_new_age.json"
+PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams_new_age.json"
 
 #################################################################
 
@@ -44,8 +44,8 @@ export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # Parameters for DEAP algorithm
-GENERATIONS=1
-POPULATION=5
+GENERATIONS=20
+POPULATION=20
 SEED=1234
 SIGMA=1
 NUM_OBJECTIVES=2

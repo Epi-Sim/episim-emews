@@ -1,4 +1,4 @@
-STRATEGY="deap_ga"
+STRATEGY="deap_cmaes"
 EXPID="test_${STRATEGY}_mo"
 
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
@@ -44,8 +44,8 @@ export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # Parameters for DEAP algorithm
-GENERATIONS=20
-POPULATION=20
+GENERATIONS=5
+POPULATION=5
 SEED=1234
 SIGMA=1
 NUM_OBJECTIVES=2

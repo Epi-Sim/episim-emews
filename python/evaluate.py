@@ -63,10 +63,10 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
             age = G_dic[i]
             epidata_xa.loc[dict(G=age)] = epidata_xa.loc[dict(G=age)] *scale/(df_pop.loc[:,age].sum())
             simdata_xa.loc[dict(G=age)]  = simdata_xa.loc[dict(G=age)] *scale/(df_pop.loc[:,age].sum())
-        rmse_xa = xs.mape(simdata_xa, epidata_xa, dim = 'T')
+        rmse_xa = xs.rmse(epidata_xa, simdata_xa, dim = 'T')
         rmse_xa.to_netcdf(output_fname)
         rmse = []
-        ages = ['M','Y']
+        ages = ['O','Y']
         i = 0
         for var in epi_variable:
             rmse.append(float(rmse_xa[var].loc[ages[i]]))

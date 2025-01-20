@@ -101,10 +101,20 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
-    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
-    return [(float(x),) if not math.isnan(float(x)) else (float(99999999),) for x in split_result]
+    fitness_list = []
+    for x in split_result:
+        xs = x.split(",")
+        fitness_vals = []
+        for i,v in enumerate(xs):
+            if math.isnan(float(v)):
+                v = 9999999999.0 
+            fitness_vals.append(float(v))
+        fitness_list.append(tuple(fitness_vals))
     
-    #return [(float(x),) for x in split_result]
+    return fitness_list
+    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
+     
+    
 
 def make_random_parameters():
     """
@@ -137,15 +147,23 @@ def run():
 
     # parse params
     printf("Parameters: {}".format(parameters))
-    (num_iterations, num_population, seed, ea_parameters_file) = eval('{}'.format(parameters))
+    (num_iterations, num_population, seed, ea_parameters_file, num_objectives) = eval('{}'.format(parameters))
     random.seed(seed)
     ea_parameters = deap_utils.create_parameters(ea_parameters_file)
     global transformer
     transformer = Transformer(ea_parameters)
 
+    weights = tuple([-1] * int(num_objectives))
+
+    if len(weights) == 1:
+        creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+        creator.create("Individual", list, fitness=creator.FitnessMin)
+    else:
+        creator.create("FitnessMulti", base.Fitness, weights=weights)
+        creator.create("Individual", list, fitness=creator.FitnessMulti)
+
     # deap class creators
-    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-    creator.create("Individual", list, fitness=creator.FitnessMin)
+    
 
     # deap method definitions
     toolbox = base.Toolbox()
@@ -156,7 +174,10 @@ def run():
     toolbox.register("evaluate", obj_func)
     toolbox.register("mate", cxUniform, indpb=0.5)
     toolbox.register("mutate", custom_mutate, indpb=0.2)
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    if len(weights) == 1:
+        toolbox.register("select", tools.selTournament, tournsize=3)
+    else:
+        toolbox.register("select", tools.selNSGA2)
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_population)   

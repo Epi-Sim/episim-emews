@@ -49,8 +49,18 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
-    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
-    return [(float(x),) if not math.isnan(float(x)) else (float(99999999),) for x in split_result]
+    
+    fitness_list = []
+    for x in split_result:
+        xs = x.split(",")
+        fitness_vals = []
+        for i,v in enumerate(xs):
+            if math.isnan(float(v)):
+                v = 9999999999.0 
+            fitness_vals.append(float(v))
+        fitness_list.append(tuple(fitness_vals))
+    
+    return fitness_list
 
 def timestamp(scores):
     return str(time.time())
@@ -93,6 +103,9 @@ def check_bounds(ea_parameters):
         return wrapper
     return decorator
 
+def generate_random_array(ea_parameters):
+    return [np.random.uniform(p.lower, p.upper) for i,p in enumerate(ea_parameters)]
+
 def run():
     """
     :param num_iterations: number of generations
@@ -105,11 +118,17 @@ def run():
     parameters = eqpy.IN_get()
     # parse params
     printf("Parameters: {}".format(parameters))
-    (num_iterations, num_population, sigma, seed, ea_parameters_file) = eval('{}'.format(parameters))
+    (num_iterations, num_population, sigma, seed, ea_parameters_file, num_objectives) = eval('{}'.format(parameters))
 
     np.random.seed(seed)
     random.seed(seed)
 
+    weights = tuple([-1] * int(num_objectives))
+
+    
+    creator.create("FitnessMin", base.Fitness, weights=weights)
+    creator.create("Individual", list, fitness=creator.FitnessMin)
+    
     global ea_parameters
     ea_parameters = deap_utils.create_parameters(ea_parameters_file)
     N = len(ea_parameters)
@@ -119,10 +138,12 @@ def run():
         centroids[i] = (p.upper + p.lower) / 2
         Cov[i,i] = ( (p.upper - p.lower) / 4 )**2
     
-    strategy = cma.Strategy(centroid=centroids, sigma=sigma, lambda_=num_population, cmatrix=Cov)
-
-    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-    creator.create("Individual", list, fitness=creator.FitnessMin)
+    if len(weights) == 1:
+        strategy = cma.Strategy(centroid=centroids, sigma=sigma, lambda_=num_population, cmatrix=Cov)
+    else :
+        population = [creator.Individual(generate_random_array(ea_parameters)) for _ in range (num_population)] 
+        strategy = cma.StrategyMultiObjective(population=population, sigma=sigma, mu=num_population, lambda_=num_population)
+    
 
     toolbox = base.Toolbox()
     toolbox.register("generate", strategy.generate, creator.Individual)
@@ -130,6 +151,12 @@ def run():
     toolbox.register("evaluate", obj_func)
     toolbox.register("map", queue_map)
     toolbox.decorate("generate", check_bounds(ea_parameters))
+
+    if len(weights) > 1:
+        fitness_list = toolbox.map(obj_func, population)
+
+        for i,ind in enumerate(population):
+            ind.fitness.values = fitness_list[i]
 
     hof = tools.HallOfFame(1)
 

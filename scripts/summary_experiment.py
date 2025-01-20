@@ -3,9 +3,15 @@ import pandas as pd
 import xarray as xr
 import xskillscore as xs
 import json
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import datetime
 
+base_folder = ".."
 experiment_folder = "test_deap_cmaes"
-pattern = f"../experiments/{experiment_folder}/instance_*/output/RMSE.nc"
+pattern = f"{base_folder}/experiments/{experiment_folder}/instance_*/output/RMSE.nc"
+
+#ANALYZE THE FULL EXPERIMENT LOOKING FOR THE BEST SIMULATION (min RMSE)
 
 list_gen = []
 list_ind = []
@@ -28,5 +34,6 @@ df = pd.DataFrame(data = d)
 
 df = df.sort_values(by='RMSE')
 
-output_path = f"../experiments/{experiment_folder}/summary.csv"
-df.to_csv(output_path, index=False)   
+output_path = f"{base_folder}/experiments/{experiment_folder}/summary.csv"
+df.to_csv(output_path, index=False)
+

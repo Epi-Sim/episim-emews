@@ -92,7 +92,7 @@ fi
 
 # Computing Resources
 
-export PROCS=96
+export PROCS=336
 export PROJECT=bsc08
 export WALLTIME=02:00:00
 export QUEUE=gp_bscls
@@ -105,7 +105,7 @@ export DEBUG_MODE=2
 if [ ${CLUSTER_NAME} = "mn5" ]; then
   module load swig java-jdk/8u131 ant/1.10.14 R/4.3.2 zsh hdf5 python/3.12.1 swiftt/1.6.2-python-3.12.1 julia/1.10.0
   source $EMEWS_PROJECT_ROOT/venv/bin/activate
-  export PPN=96
+  export PPN=112
 elif [ ${CLUSTER_NAME} = "local" ]; then
   export PPN=8
 else

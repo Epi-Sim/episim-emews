@@ -53,24 +53,43 @@ def aggregate_patches(sim_ds, instance_folder, data_folder, mapping_fname=None, 
     coords = data_vars[var].coords
     return xr.Dataset(data_vars=data_vars, coords=coords)
 
-def scale_by_population(sim_ds, instance_folder, data_folder, scale=1e5, **kwargs):
+def scale_by_population(sim_ds, instance_folder, data_folder, level='prov_age', scale=1e5, **kwargs):
 
+     #The data has to be in xarray.DataSet format
+    
     config_fname = os.path.join(instance_folder, "config.json")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
 
     G_labels = config_dict['population_params']['G_labels']
-    pop_fname = config_dict['data']["metapopulation_data_filename"]
-    pop_fname = os.path.join(data_folder, pop_fname)
+    #pop_fname = config_dict['data']["metapopulation_data_filename"]
+    pop_fname = os.path.join(data_folder, 'metapopulation_data_prov.csv')
     pop_df = pd.read_csv(pop_fname, dtype={'id':'str'})
     pop_df = pop_df.set_index('id')
     pop_df = pop_df[G_labels].stack()
     pop_df.index.names = ('M', 'G')
     pop_xa = pop_df.to_xarray()
-    for var in sim_ds:
-        sim_ds[var] = sim_ds[var] / pop_xa * scale
-
-    return sim_ds
+    if level == 'global':
+        pop_xa = pop_xa.sum(['M','G'])
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds    
+    elif level == 'age':
+        pop_xa = pop_xa.sum(['M'])
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds
+    elif level == 'prov':
+        pop_xa = pop_xa.sum(['G'])
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds
+    elif level == 'prov_age':
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds
+    else :
+        return "error"
 
 
 """

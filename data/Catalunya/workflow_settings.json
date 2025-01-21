@@ -1,0 +1,26 @@
+{
+    "postprocessing": {
+        "input_fname":  "observables.nc",
+        "output_fname": "obs_agg_scaled.nc",
+        "remove_input": false,
+        "steps": [
+            {
+                "function": "scale_by_population",
+                "scale": 1e-5
+            },
+            {
+                "function": "aggregate_simulation",
+                "mapping_fname": "metapop_mapping.json"  
+            }
+        ]
+    },
+    "evaluation": {
+        "function": "fit_epicurves",
+        "input_fname":  "obs_agg_scaled.nc",
+        "parameters": {
+            "epidata_fname": "casos_hosp_def_edad_provres_new.nc",
+            "epi_variable":  "new_deaths",
+            "output_fname": "RMSE.nc"
+        }
+    }
+}

@@ -4,17 +4,15 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import xskillscore as xs
-
+from postprocessing import scale_by_population
 
 #################################################################
 # Custom Evaluation Functions
 #################################################################
 
-def fit_epicurves(simdata_ds, instance_folder, data_folder, 
-                  epidata_fname=None, epi_variable=None,
-                  level='age', **kwargs):
-    
-
+def compute_RMSE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
+                 epi_variable=['new_hospitalized', 'new_deaths'], level='global',
+                 **kwargs):
     config_fname = os.path.join(instance_folder, "config.json")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
@@ -40,41 +38,56 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
     simdata_xa = simdata_ds[epi_variable]
 
     output_folder = os.path.join(instance_folder, "output")
-    output_fname  = os.path.join(output_folder, kwargs["output_fname"])
+    output_fname  = os.path.join(output_folder, f"RMSE_{level}.nc")
 
     if level == 'global':
-        col_pop = 'Total'
         epidata_xa = epidata_xa.sum(['G', 'M'])
         simdata_xa = simdata_xa.sum(['G', 'M'])
-        epidata_xa = epidata_xa*scale/df_pop.loc[:,col_pop].sum()
-        simdata_xa = simdata_xa*scale/df_pop.loc[:,col_pop].sum()
-        rmse_xa = xs.rmse(simdata_xa, epidata_xa, dim = 'T')
-        rmse_xa.to_netcdf(output_fname)
-        rmse = []
-        for var in epi_variable:
-            rmse.append((float(rmse_xa[var])))
-        rmse = ','.join(map(str,rmse))
-        return rmse
     elif level == 'age':
         epidata_xa = epidata_xa.sum(['M'])
         simdata_xa = simdata_xa.sum(['M'])
-        G_dic = epidata_xa.coords['G'].values
-        for i in range(len(G_dic)):
-            age = G_dic[i]
-            epidata_xa.loc[dict(G=age)] = epidata_xa.loc[dict(G=age)] *scale/(df_pop.loc[:,age].sum())
-            simdata_xa.loc[dict(G=age)]  = simdata_xa.loc[dict(G=age)] *scale/(df_pop.loc[:,age].sum())
-        rmse_xa = xs.rmse(epidata_xa, simdata_xa, dim = 'T')
-        rmse_xa.to_netcdf(output_fname)
-        rmse = []
-        ages = ['O','Y']
-        i = 0
-        for var in epi_variable:
-            rmse.append(float(rmse_xa[var].loc[ages[i]]))
-            i = i+1
-        rmse = ','.join(map(str,rmse))
-        return rmse
+    elif level == 'prov':
+        epidata_xa = epidata_xa.sum(['G'])
+        simdata_xa = simdata_xa.sum(['G'])
+    elif level == 'prov_age':
+        epidata_xa = epidata_xa
+        simdata_xa = simdata_xa
     else:
-        return 'ERROR EVALUATE'
+        return "ERROR EVALUATE"
+
+    level = level
+    scale_by_population(epidata_xa, instance_folder, data_folder, scale=1e5, level='global')
+    scale_by_population(simdata_xa, instance_folder, data_folder, scale=1e5, level='global')
+    rmse_xa = xs.rmse(epidata_xa, simdata_xa, dim = 'T')
+    rmse_xa.to_netcdf(output_fname)
+    return rmse_xa
+
+def fit_objectives(instance_folder, num_objectives, parameters,  **kwargs):
+    metric_list = []
+    for i in range(int(num_objectives)):
+        level = parameters[i]['level']
+        epi_variable = parameters[i]['epi_variable']
+        metric_fname = os.path.join(instance_folder, f"output/RMSE_{level}.nc")
+        metric_ds = xr.load_dataset(metric_fname)
+        metric_xa = metric_ds[epi_variable]
+
+        
+        if level == 'global':
+            metric_list.append(float(metric_xa))
+        elif level == 'age':
+            age = parameters[i]['G']
+            metric_list.append(float(metric_xa.loc[age]))
+        elif level == 'prov':
+            prov = parameters[i]['M']
+            metric_list.append(float(metric_xa.loc[prov]))
+        elif level == 'prov_age':
+            age = parameters[i]['G']
+            prov = parameters[i]['M']
+            metric_list.append(float(metric_xa.loc[prov,age]))
+        else:
+            return "ERROR SELECT FITNESS"
+    metric_list = ','.join(map(str,metric_list))
+    return metric_list
 
 def dummy_evaluate(sim_xa, instance_folder, data_folder, **kwargs):
     return 0
@@ -83,7 +96,8 @@ def dummy_evaluate(sim_xa, instance_folder, data_folder, **kwargs):
 
 evaluate_function_map = {
     "dummy_evaluate": dummy_evaluate,
-    "fit_epicurves": fit_epicurves
+    "compute_RMSE": compute_RMSE,
+    "fit_objectives": fit_objectives
 }
 
 def evaluate_obj(instance_folder, data_folder, workflow_config_fname):
@@ -95,14 +109,20 @@ def evaluate_obj(instance_folder, data_folder, workflow_config_fname):
     evaluation_dict = workflow_config.get('evaluation', None)
     if evaluation_dict is None:
         raise Exception("Can't perform evalaute_obj missing key evalaute in workflow config")
+
+    for step in evaluation_dict["steps"]:
+        function_name   = step["function"]
+        input_fname     =  step.get("input_fname", None)
+        parameters_dict = step.get("parameters", {})       
     
-    function_name   = evaluation_dict.get("function", None)
-    parameters_dict = evaluation_dict.get("parameters", {})
-    input_fname     =  evaluation_dict.get("input_fname", None)
-    input_fname     = os.path.join(output_folder, input_fname)
-    sim_ds = xr.load_dataset(input_fname)
-    evaluate_function = evaluate_function_map[function_name]
-    
-    return evaluate_function(sim_ds, instance_folder, data_folder, **parameters_dict)
+        evaluate_function = evaluate_function_map[function_name]  
+        if input_fname:
+            input_fname = os.path.join(output_folder, input_fname)
+            sim_ds = xr.load_dataset(input_fname)
+            evaluate_function(sim_ds, instance_folder, data_folder, **parameters_dict)
+        else:
+            fitness = evaluate_function(instance_folder, **parameters_dict)
+        
+    return fitness
 
 #################################################################

@@ -1,13 +1,9 @@
 {
     "postprocessing": {
         "input_fname":  "observables.nc",
-        "output_fname": "obs_agg_scaled.nc",
+        "output_fname": "obs_agg.nc",
         "remove_input": false,
         "steps": [
-            {
-                "function": "scale_by_population",
-                "scale": 1e-5
-            },
             {
                 "function": "aggregate_simulation",
                 "mapping_fname": "metapop_mapping.json"  
@@ -15,11 +11,48 @@
         ]
     },
     "evaluation": {
-        "function": "dummy_evaluate",
-        "input_fname":  "obs_agg_scaled.nc",
-        "parameters": {
-            "epidata_fname": "real_obserbables.nc",
-            "epi_variable":  "new_deaths"
-        }
+    	"steps":[
+    	    { 
+    	    	"function": "compute_RMSE",
+    	    	"input_fname": "obs_agg.nc",
+    	    	"parameters":{
+	    		"epidata_fname": "real_observables.nc",
+	    	    	"epi_variable": ["new_deaths", "new_hospitalized"],
+	    	    	"level" : "global",
+	    	    	"scale": "1e5"
+	    	 }
+	    },
+	    {
+    	    	 "function": "compute_RMSE",
+    	    	 "input_fname": "obs_agg.nc",
+    	    	 "parameters":{
+	    	    	 "epidata_fname": "real_observables.nc",
+	    	    	 "epi_variable": ["new_deaths", "new_hospitalized"],
+	    	    	 "level" : "prov_age",
+	    	    	 "scale": "1e5"
+	    	  } 	    	    	    
+    	    },
+    	    {
+    	     
+		"function": "fit_objectives",
+		"parameters":{
+			"num_objectives": "2",
+			"parameters":[ 
+			     {
+				    "level": "global",
+				    "epi_variable":  "new_deaths"
+			     },
+			     {
+				    "level": "prov_age",
+				    "epi_variable": "new_hospitalized",
+				    "M": "01",
+				    "G": "Y"
+			     }
+			 ]
+		}
+	     }
+	]
     }
 }
+
+            

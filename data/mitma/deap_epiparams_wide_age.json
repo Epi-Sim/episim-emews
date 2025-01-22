@@ -90,10 +90,10 @@
 	{
 		"name": "γᵍY", 
 		"type": "float", 
-		"lower": 0.0,
-		"upper": 0.01,
-		"sigma": 0.001,
-		"args": {"loc": 0.0, "scale": 0.01}
+		"lower": 0.0001,
+		"upper": 0.001,
+		"sigma": 0.0001,
+		"args": {"loc": 0.0001, "scale": 0.0009}
 	},
 	{
 		"name": "δs", 

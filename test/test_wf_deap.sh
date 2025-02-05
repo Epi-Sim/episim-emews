@@ -19,11 +19,11 @@ DATA_FOLDER="${TURBINE_OUTPUT}/data"
 BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config.json"
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 
-BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings_test.json"
-WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings_test.json"
+BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"
+WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 
-BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams_new_age.json"
-PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams_new_age.json"
+BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams_wide_age.json"
+PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams_wide_age.json"
 
 #################################################################
 

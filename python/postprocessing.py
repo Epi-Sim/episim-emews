@@ -88,6 +88,18 @@ def scale_by_population(sim_ds, instance_folder, data_folder, level='prov_age', 
         for var in sim_ds:
             sim_ds[var] = sim_ds[var] / pop_xa * scale
         return sim_ds
+    elif level == 'one_prov':
+        region = kwargs['region']
+        pop_xa = pop_xa.sel(M=region).drop_vars('M').sum(['G'])
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds
+    elif level == 'one_prov_age':
+        region = kwargs['region']
+        pop_xa = pop_xa.sel(M=region).drop_vars('M')
+        for var in sim_ds:
+            sim_ds[var] = sim_ds[var] / pop_xa * scale
+        return sim_ds
     else :
         return "error"
 

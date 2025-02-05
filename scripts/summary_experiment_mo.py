@@ -53,7 +53,7 @@ elif level == 'age':
 	    metric = xr.load_dataset(path)
 	    Y_H = metric['new_hospitalized'].loc['Y']
 	    M_H = metric['new_hospitalized'].loc['M']
-	    D_H = metric['new_hospitalized'].loc['O']
+	    O_H = metric['new_hospitalized'].loc['O']
 	    M_D = metric['new_deaths'].loc['M']
 	    O_D = metric['new_deaths'].loc['O']
 	    list_gen.append(float(generation))
@@ -115,7 +115,7 @@ elif level == 'prov_age':
 	    metric = xr.load_dataset(path)
 	    Y_H = metric['new_hospitalized'].loc[prov,'Y']
 	    M_H = metric['new_hospitalized'].loc[prov,'M']
-	    D_H = metric['new_hospitalized'].loc[prov,'O']
+	    O_H = metric['new_hospitalized'].loc[prov,'O']
 	    M_D = metric['new_deaths'].loc[prov,'M']
 	    O_D = metric['new_deaths'].loc[prov,'O']
 	    list_gen.append(float(generation))

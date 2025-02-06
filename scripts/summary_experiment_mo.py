@@ -125,15 +125,15 @@ elif level == 'prov_age':
 	    list_O_H.append(float(O_H))
 	    list_M_D.append(float(M_D))
 	    list_O_D.append(float(O_D))
-	    level = f'prov_{prov}'
-        if metric == 'RMSE':    
+	if metric == 'RMSE':    
 	    d = {'generation': list_gen,'individual': list_ind,'RMSE_Y_hosp': list_Y_H,
 		'RMSE_M_hosp': list_M_H, 'RMSE_O_hosp': list_O_H,
 		'RMSE_M_death': list_M_D, 'RMSE_O_death': list_O_D}
 	elif metric == 'MAPE':    
 	    d = {'generation': list_gen,'individual': list_ind,'MAPE_Y_hosp': list_Y_H,
 		'MAPE_M_hosp': list_M_H, 'MAPE_O_hosp': list_O_H,
-		'MAPE_M_death': list_M_D, 'MAPE_O_death': list_O_D}		
+		'MAPE_M_death': list_M_D, 'MAPE_O_death': list_O_D}
+        level = f'prov_{prov}'		
 
 df = pd.DataFrame(data = d)
 

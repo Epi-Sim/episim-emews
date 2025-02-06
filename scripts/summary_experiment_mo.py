@@ -23,9 +23,9 @@ if level == 'global':
 	    generation = split_instance[1]
 	    individual = split_instance[2]
 
-	    metric = xr.load_dataset(path)
-	    metric_D = metric['new_deaths']
-	    metric_H = metric['new_hospitalized']
+	    metric_xa = xr.load_dataset(path)
+	    metric_D = metric_xa['new_deaths']
+	    metric_H = metric_xa['new_hospitalized']
 	    list_gen.append(float(generation))
 	    list_ind.append(float(individual))
 	    list_D.append(float(metric_D))
@@ -50,12 +50,12 @@ elif level == 'age':
 	    generation = split_instance[1]
 	    individual = split_instance[2]
 
-	    metric = xr.load_dataset(path)
-	    Y_H = metric['new_hospitalized'].loc['Y']
-	    M_H = metric['new_hospitalized'].loc['M']
-	    O_H = metric['new_hospitalized'].loc['O']
-	    M_D = metric['new_deaths'].loc['M']
-	    O_D = metric['new_deaths'].loc['O']
+	    metric_xa = xr.load_dataset(path)
+	    Y_H = metric_xa['new_hospitalized'].loc['Y']
+	    M_H = metric_xa['new_hospitalized'].loc['M']
+	    O_H = metric_xa['new_hospitalized'].loc['O']
+	    M_D = metric_xa['new_deaths'].loc['M']
+	    O_D = metric_xa['new_deaths'].loc['O']
 	    list_gen.append(float(generation))
 	    list_ind.append(float(individual))
 	    list_Y_H.append(float(Y_H))
@@ -83,9 +83,9 @@ elif level == 'prov':
 	    generation = split_instance[1]
 	    individual = split_instance[2]
 
-	    metric = xr.load_dataset(path)
-	    metric_D = metric['new_deaths'].loc[prov]
-	    metric_H = metric['new_hospitalized'].loc[prov]
+	    metric_xa = xr.load_dataset(path)
+	    metric_D = metric_xa['new_deaths'].loc[prov]
+	    metric_H = metric_xa['new_hospitalized'].loc[prov]
 	    list_gen.append(float(generation))
 	    list_ind.append(float(individual))
 	    list_D.append(float(metric_D))
@@ -112,12 +112,12 @@ elif level == 'prov_age':
 	    generation = split_instance[1]
 	    individual = split_instance[2]
 
-	    metric = xr.load_dataset(path)
-	    Y_H = metric['new_hospitalized'].loc[prov,'Y']
-	    M_H = metric['new_hospitalized'].loc[prov,'M']
-	    O_H = metric['new_hospitalized'].loc[prov,'O']
-	    M_D = metric['new_deaths'].loc[prov,'M']
-	    O_D = metric['new_deaths'].loc[prov,'O']
+	    metric_xa = xr.load_dataset(path)
+	    Y_H = metric_xa['new_hospitalized'].loc[prov,'Y']
+	    M_H = metric_xa['new_hospitalized'].loc[prov,'M']
+	    O_H = metric_xa['new_hospitalized'].loc[prov,'O']
+	    M_D = metric_xa['new_deaths'].loc[prov,'M']
+	    O_D = metric_xa['new_deaths'].loc[prov,'O']
 	    list_gen.append(float(generation))
 	    list_ind.append(float(individual))
 	    list_Y_H.append(float(Y_H))
@@ -133,7 +133,6 @@ elif level == 'prov_age':
 	    d = {'generation': list_gen,'individual': list_ind,'MAPE_Y_hosp': list_Y_H,
 		'MAPE_M_hosp': list_M_H, 'MAPE_O_hosp': list_O_H,
 		'MAPE_M_death': list_M_D, 'MAPE_O_death': list_O_D}
-        
         level = f'prov_{prov}'
 
 df = pd.DataFrame(data = d)

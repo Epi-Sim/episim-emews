@@ -68,7 +68,7 @@ elif level == 'age':
 	    d = {'generation': list_gen,'individual': list_ind,'RMSE_Y_hosp': list_Y_H,
 		'RMSE_M_hosp': list_M_H, 'RMSE_O_hosp': list_O_H,
 		'RMSE_M_death': list_M_D, 'RMSE_O_death': list_O_D}
-	elif metric == 'RMSE':	    
+	elif metric == 'MAPE':	    
 	    d = {'generation': list_gen,'individual': list_ind,'MAPE_Y_hosp': list_Y_H,
 		'MAPE_M_hosp': list_M_H, 'MAPE_O_hosp': list_O_H,
 		'MAPE_M_death': list_M_D, 'MAPE_O_death': list_O_D}
@@ -91,13 +91,13 @@ elif level == 'prov':
 	    list_D.append(float(metric_D))
 	    list_H.append(float(metric_H))
 	    
-	 if metric == 'RMSE':
+	if metric == 'RMSE':
 	    d = {'generation': list_gen,'individual': list_ind,
 	     'RMSE_D': list_D, 'RMSE_H': list_H}
-	 elif metric == 'MAPE':
+	elif metric == 'MAPE':
 	    d = {'generation': list_gen,'individual': list_ind,
 	     'MAPE_D': list_D, 'MAPE_H': list_H}
-	 level = f'prov_{prov}'
+	level = f'prov_{prov}'
 
 elif level == 'prov_age':
 	list_Y_H = []
@@ -126,7 +126,7 @@ elif level == 'prov_age':
 	    list_M_D.append(float(M_D))
 	    list_O_D.append(float(O_D))
 	    level = f'prov_{prov}'
-	if metric == 'RMSE':    
+        if metric == 'RMSE':    
 	    d = {'generation': list_gen,'individual': list_ind,'RMSE_Y_hosp': list_Y_H,
 		'RMSE_M_hosp': list_M_H, 'RMSE_O_hosp': list_O_H,
 		'RMSE_M_death': list_M_D, 'RMSE_O_death': list_O_D}

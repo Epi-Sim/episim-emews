@@ -133,7 +133,8 @@ elif level == 'prov_age':
 	    d = {'generation': list_gen,'individual': list_ind,'MAPE_Y_hosp': list_Y_H,
 		'MAPE_M_hosp': list_M_H, 'MAPE_O_hosp': list_O_H,
 		'MAPE_M_death': list_M_D, 'MAPE_O_death': list_O_D}
-        level = f'prov_{prov}'		
+        
+        level = f'prov_{prov}'
 
 df = pd.DataFrame(data = d)
 

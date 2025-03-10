@@ -5,10 +5,6 @@
         "remove_input": false,
         "steps": [
             {
-                "function": "scale_by_population",
-                "scale": 1e5
-            },
-            {
                 "function": "aggregate_simulation",
                 "mapping_fname": "metapop_mapping.json"  
             }

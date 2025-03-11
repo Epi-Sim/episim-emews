@@ -16,7 +16,7 @@ source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/mitma"
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
-BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config.json"
+BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config_MMCACovid19.json"
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 
 BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"

@@ -43,7 +43,7 @@ def fit_epicurves(simdata_ds, instance_folder, data_folder,
     output_fname  = os.path.join(output_folder, kwargs["output_fname"])
 
     if level == 'global':
-        col_pop = 'Total'
+        col_pop = 'total'
         epidata_xa = epidata_xa.sum(['G', 'M'])
         simdata_xa = simdata_xa.sum(['G', 'M'])
         epidata_xa = epidata_xa*scale/df_pop.loc[:,col_pop].sum()

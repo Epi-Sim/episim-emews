@@ -2,7 +2,7 @@
 
 set -eu
 
-USE_COMPILED_EPISIM=true
+USE_COMPILED_EPISIM=false
 
 # Check for an optional timeout threshold in seconds. If the duration of the
 # model run as executed below, takes longer that this threshhold
@@ -45,17 +45,16 @@ mkdir -p output
 config_path=$(realpath ${4})
 
 # TODO: Define the command to run the model. For example,
-# if $USE_COMPILED_EPISIM
-# then
+if $USE_COMPILED_EPISIM
+then
     MODEL_CMD="${executable_path}"
-# else
-#     MODEL_BASH_PATH="$(dirname ${executable_path})"
-#     MODEL_BASH_PATH="$(realpath ${MODEL_BASH_PATH}/../../)"
-#     MODEL_CMD="julia --project=${MODEL_BASH_PATH} ${MODEL_BASH_PATH}/src/run.jl"
-# fi
+else
+    MODEL_BASH_PATH="$(dirname ${executable_path})"
+    MODEL_BASH_PATH="$(realpath ${MODEL_BASH_PATH}/../)"
+    MODEL_CMD="julia  ${MODEL_BASH_PATH}/model/EpiSim.jl/src/run.jl"
+fi
 
-arg_array=("-e MMCACovid19" "run" "-d $data_path" "-c $config_path" "-i $instance_directory")
-#arg_array=("run" "-d $data_path" "-c $config_path" "-i $instance_directory")
+arg_array=("run" "-d $data_path" "-c $config_path" "-i $instance_directory")
 COMMAND="$MODEL_CMD ${arg_array[@]}"
 
 echo $COMMAND > /tmp/debug

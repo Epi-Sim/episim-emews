@@ -18,8 +18,8 @@ CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 
-BASE_PARAMS_SWEEP="${BASE_DATA_FOLDER}/sweep_params_n10.txt"
-PARAMS_SWEEP="${TURBINE_OUTPUT}/sweep_params_n10.txt"
+BASE_PARAMS_SWEEP="${BASE_DATA_FOLDER}/test_params_100.txt"
+PARAMS_SWEEP="${TURBINE_OUTPUT}/sweep_params.txt"
 
 #################################################################
 # source some utility functions used by EMEWS in this script
@@ -30,7 +30,7 @@ setup_test_experiment $WORKFLOW_TYPE
 
 #################################################################
 
-PROCS=3
+PROCS=10
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 SWIFT_EXE="${SWIFT_PATH}/run_wf_sweep.swift"
 

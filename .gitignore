@@ -1,3 +1,4 @@
+julia/*
 model/episim
 experiments/*
 venv

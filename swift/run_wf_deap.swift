@@ -102,7 +102,8 @@ string ea_params_fname = argv("ea_params");
 string me_algo = argv("me_algo");
 int population = toint(argv("np", "5"));
 int iterations = toint(argv("ni","10"));
-int sigma = toint(argv("sigma","3"));
+int sigma      = toint(argv("sigma","3"));
+int num_objs   = toint(argv("nobjs", "1"));
 
 printf("=================================================") =>
 printf("- Starting MMCA-EMEWS EQ-PY workflow") =>
@@ -132,7 +133,7 @@ check_requirements() => {
   printf("- Beginning Model exploration!") =>
   
   if (me_algo == "deap_ga"){
-    string me_algo_params = "%d,%d,%d,'%s'" %  (iterations, population, seed, ea_params_fname) => {
+    string me_algo_params = "%d,%d,%d,'%s',%d" %  (iterations, population, seed, ea_params_fname, num_objs) => {
       int rank = string2int(r_ranks[0]) => {
         start(rank, me_algo, me_algo_params) =>
           printf("- Finshed Computation");
@@ -140,7 +141,7 @@ check_requirements() => {
     }
   }
   else if (me_algo == "deap_cmaes"){
-    string me_algo_params = "%d,%d,%d,%d,'%s'" %  (iterations, population, sigma, seed, ea_params_fname) => {
+    string me_algo_params = "%d,%d,%d,%d,'%s',%d" %  (iterations, population, sigma, seed, ea_params_fname, num_objs) => {
       int rank = string2int(r_ranks[0]) => {
         start(rank, me_algo, me_algo_params) =>
           printf("- Finshed Computation");

@@ -1,3 +1,4 @@
+model/episim
 experiments/*
 venv
 python/__pycache__/*

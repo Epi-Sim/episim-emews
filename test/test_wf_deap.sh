@@ -1,5 +1,5 @@
 STRATEGY="deap_cmaes"
-EXPID="test_${STRATEGY}"
+EXPID="test_${STRATEGY}_mo"
 
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
@@ -13,7 +13,7 @@ source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 #################################################################
 
-BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/mitma"
+BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/test"
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config_MMCACovid19.json"
@@ -22,7 +22,7 @@ CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 
-BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams.json"
+BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams_wide_age.json"
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
 
 #################################################################
@@ -48,6 +48,7 @@ GENERATIONS=5
 POPULATION=5
 SEED=1234
 SIGMA=1
+NUM_OBJECTIVES=2
 
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 SWIFT_EXE="${SWIFT_PATH}/run_wf_deap.swift"
@@ -55,7 +56,8 @@ SWIFT_EXE="${SWIFT_PATH}/run_wf_deap.swift"
 # Setting the command line
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG}
                 -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
-                -np=${POPULATION}  -ni=${GENERATIONS}  -seed=${SEED}  -sigma=${SIGMA}"
+                -np=${POPULATION}  -ni=${GENERATIONS}  -seed=${SEED}  -sigma=${SIGMA}
+                -nobjs=${NUM_OBJECTIVES}"
 
 
 swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_EXE  $CMD_LINE_ARGS

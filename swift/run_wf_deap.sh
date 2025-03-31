@@ -92,7 +92,7 @@ fi
 
 # Computing Resources
 
-export PROCS=96
+export PROCS=336
 export PROJECT=bsc08
 export WALLTIME=02:00:00
 export QUEUE=gp_bscls
@@ -105,7 +105,7 @@ export DEBUG_MODE=2
 if [ ${CLUSTER_NAME} = "mn5" ]; then
   module load swig java-jdk/8u131 ant/1.10.14 R/4.3.2 zsh hdf5 python/3.12.1 swiftt/1.6.2-python-3.12.1 julia/1.10.0
   source $EMEWS_PROJECT_ROOT/venv/bin/activate
-  export PPN=96
+  export PPN=112
 elif [ ${CLUSTER_NAME} = "local" ]; then
   export PPN=8
 else
@@ -141,6 +141,7 @@ ITERATIONS=10
 NUM_POPULATION=5
 SEED=1234
 SIGMA=1
+NUM_OBJECTIVES=3
 
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
@@ -152,7 +153,7 @@ CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
                -w=${WORKFLOW_JSON}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
-               -seed=${SEED}  -sigma=${SIGMA}"
+               -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
 
 swift-t -p  -n $PROCS $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
 

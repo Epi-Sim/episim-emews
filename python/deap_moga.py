@@ -20,7 +20,6 @@ import eqpy, deap_utils
 # list of ga_utils parameter objects
 transformer = None
 
-
 class Transformer:
 
     def __init__(self, ea_params, clf = None, scaler = None):
@@ -64,18 +63,13 @@ class Transformer:
         return init_params
 
 
-       
 def printf(val):
     print(val)
     sys.stdout.flush()
 
-# Not used
 def obj_func(x):
     return 0
 
-# {"batch_size":512,"epochs":51,"activation":"softsign",
-#"dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
-#"learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
 def create_list_of_json_strings(list_of_lists, super_delim=";"):
     # create string of ; separated jsonified maps
     res = []
@@ -101,6 +95,7 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
+
     fitness_list = []
     for x in split_result:
         xs = x.split(",")
@@ -112,9 +107,7 @@ def queue_map(obj_func, pops):
         fitness_list.append(tuple(fitness_vals))
     
     return fitness_list
-    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
-     
-    
+
 
 def make_random_parameters():
     """
@@ -134,6 +127,7 @@ def cxUniform(ind1, ind2, indpb):
 
 def timestamp(scores):
     return str(time.time())
+
 
 def run():
     """
@@ -155,15 +149,9 @@ def run():
 
     weights = tuple([-1] * int(num_objectives))
 
-    if len(weights) == 1:
-        creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-        creator.create("Individual", list, fitness=creator.FitnessMin)
-    else:
-        creator.create("FitnessMulti", base.Fitness, weights=weights)
-        creator.create("Individual", list, fitness=creator.FitnessMulti)
-
     # deap class creators
-    
+    creator.create("FitnessMulti", base.Fitness, weights=weights)
+    creator.create("Individual", list, fitness=creator.FitnessMulti)
 
     # deap method definitions
     toolbox = base.Toolbox()
@@ -178,6 +166,7 @@ def run():
         toolbox.register("select", tools.selTournament, tournsize=3)
     else:
         toolbox.register("select", tools.selNSGA2)
+    
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_population)   

@@ -49,7 +49,7 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
-    
+
     fitness_list = []
     for x in split_result:
         xs = x.split(",")
@@ -125,10 +125,10 @@ def run():
 
     weights = tuple([-1] * int(num_objectives))
 
-    
     creator.create("FitnessMin", base.Fitness, weights=weights)
     creator.create("Individual", list, fitness=creator.FitnessMin)
-    
+
+
     global ea_parameters
     ea_parameters = deap_utils.create_parameters(ea_parameters_file)
     N = len(ea_parameters)
@@ -137,14 +137,10 @@ def run():
     for i,p in enumerate(ea_parameters):
         centroids[i] = (p.upper + p.lower) / 2
         Cov[i,i] = ( (p.upper - p.lower) / 4 )**2
-    
-    if len(weights) == 1:
-        strategy = cma.Strategy(centroid=centroids, sigma=sigma, lambda_=num_population, cmatrix=Cov)
-    else :
-        population = [creator.Individual(generate_random_array(ea_parameters)) for _ in range (num_population)] 
-        strategy = cma.StrategyMultiObjective(population=population, sigma=sigma, mu=num_population, lambda_=num_population)
-    
 
+    population = [creator.Individual(generate_random_array(ea_parameters)) for _ in range (num_population)] 
+    strategy = cma.StrategyMultiObjective(population=population, sigma=sigma, mu=num_population, lambda_=num_population)
+    
     toolbox = base.Toolbox()
     toolbox.register("generate", strategy.generate, creator.Individual)
     toolbox.register("update", strategy.update)
@@ -152,12 +148,12 @@ def run():
     toolbox.register("map", queue_map)
     toolbox.decorate("generate", check_bounds(ea_parameters))
 
-    if len(weights) > 1:
-        fitness_list = toolbox.map(obj_func, population)
+    
+    fitness_list = toolbox.map(obj_func, population)
 
-        for i,ind in enumerate(population):
-            ind.fitness.values = fitness_list[i]
-
+    for i,ind in enumerate(population):
+        ind.fitness.values = fitness_list[i]
+    
     hof = tools.HallOfFame(1)
 
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -172,4 +168,3 @@ def run():
     eqpy.OUT_put("DONE")
     # return the final population
     eqpy.OUT_put(create_list_of_json_strings([hof[0]]))
-

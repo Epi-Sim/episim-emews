@@ -1,7 +1,7 @@
 JULIA_URL="https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.4-linux-x86_64.tar.gz"
 ACCOUNT="bsc08"
 COMPILE="no"
-QUEUE="bsc_ls"
+QUEUE="gp_bscls"
 T="00:30:00"
 CPUS=12
 MACHINE=""
@@ -56,7 +56,7 @@ if [ $COMPILE == "yes" ]; then
         A="-A $ACCOUNT"
     fi
     if [ $QUEUE ]; then
-        Q="-qos $QUEUE"
+        Q="--qos=$QUEUE"
     fi
     srun --unbuffered -t $T $A $Q -c $CPUS -n 1 $CMD |& cat
   else

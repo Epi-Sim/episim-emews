@@ -2,7 +2,7 @@ BASE_FOLDER=$(realpath .)
 JULIA_VERSION=julia-1.11.4-linux-x86_64.tar.gz
 JULIA_URL="https://julialang-s3.julialang.org/bin/linux/x64/1.11/${JULIA_VERSION}"
 
-
+source $BASE_FOLDER/config.sh
 
 echo " - Step 1 Installing Julia..."
 if [ ! -d "julia" ]; then
@@ -10,11 +10,12 @@ if [ ! -d "julia" ]; then
   wget $JULIA_URL
   tar -xvzf ${JULIA_VERSION}
   mv julia-1.11.4 julia
+  rm $JULIA_VERSION
 else
   echo "Julia already downloaded."
 fi
 
-rm $JULIA_VERSION
+
 
 
 export PATH=$PATH:${BASE_FOLDER}/julia/bin
@@ -37,7 +38,6 @@ julia install.jl
 if [ $COMPILE == "yes" ]; then
   echo " - Step 3 Compiling EpiSim.jl..."
   echo "This may take a while, please be patient."
-  source ./config.sh
   CMD="julia install.jl -c -t ../"
   if [ $MACHINE == "slurm" ]; then
     echo "Compiling on SLURM..."
@@ -50,7 +50,7 @@ if [ $COMPILE == "yes" ]; then
         A="-A $ACCOUNT"
     fi
     if [ $QUEUE ]; then
-        Q="-qos $QUEUE"
+        Q="-q $QUEUE"
     fi
     CMD="julia install.jl -c -t ../"
     srun --unbuffered -t $T $A $Q -c $CPUS -n 1 $CMD |& cat
@@ -70,7 +70,7 @@ fi
 echo "EpiSim.jl installed successfully."
 echo "To run the simulation, use the command: ./model/episim <arguments>"
 
-
+cp $BASE_FOLDER
 echo " - Step 4 Installing python requirements"
 python -m venv venv
 source venv/bin/activate

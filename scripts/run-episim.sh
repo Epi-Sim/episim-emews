@@ -2,7 +2,7 @@
 
 set -eu
 
-USE_COMPILED_EPISIM=false
+USE_COMPILED_EPISIM=true
 
 # Check for an optional timeout threshold in seconds. If the duration of the
 # model run as executed below, takes longer that this threshhold

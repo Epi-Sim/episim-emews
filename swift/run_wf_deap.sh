@@ -8,14 +8,11 @@ set -eu
 
 if [ "$#" -ne 7 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord3)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4)"
   exit 1
 fi
 
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-
-# source some utility functions used by EMEWS in this script
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 EXPID=$1
 BASE_DATA_FOLDER=$2
@@ -24,6 +21,14 @@ BASE_WORKFLOW_JSON=$4
 BASE_PARAMS_DEAP=$5
 STRATEGY=$6
 CLUSTER_NAME=$7
+
+
+# source some utility functions used by EMEWS in this script
+source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
+source $EMEWS_PROJECT_ROOT/venv/bin/activate
+
+load_cluster_setting $MACHINE_NAME
 
 if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     echo "Incorrect Strategy ${STRATEGY}. Posible optiones a deap_ga and deap_cmaes"
@@ -89,41 +94,29 @@ else
   exit 1;
 fi
 
-
-# Computing Resources
-
-export PROCS=336
-export PROJECT=bsc08
-export WALLTIME=02:00:00
-export QUEUE=gp_bscls
-export TURBINE_SBATCH_ARGS="--qos=gp_bscls"
-export TURBINE_JOBNAME="${EXPID}_job"
-
-export DEBUG_MODE=2
-
-
-if [ ${CLUSTER_NAME} = "mn5" ]; then
-  module load swig java-jdk/8u131 ant/1.10.14 R/4.3.2 zsh hdf5 python/3.12.1 swiftt/1.6.2-python-3.12.1 julia/1.10.0
-  source $EMEWS_PROJECT_ROOT/venv/bin/activate
-  export PPN=112
-elif [ ${CLUSTER_NAME} = "local" ]; then
-  export PPN=8
-else
-  echo "Unknown Cluster name ${CLUSTER_NAME}"
-  exit 1;
-fi
-
+# Python Libraries
 export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
 export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
 
+# Computing Resources
+export PROCS=336
+export PROJECT=bsc08
+export WALLTIME=02:00:00
+
+# Turbine Spacific
+export DEBUG_MODE=2
+export TURBINE_JOBNAME="${EXPID}_job"
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-export TURBINE_LAUNCHER="srun"
-MACHINE="slurm"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
+elif [ "$MACHINE" == "slurm"]; then
+  export TURBINE_LAUNCHER="srun"
+  export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
 fi
 
 
@@ -132,9 +125,6 @@ log_script
 # echo's anything following this standard out
 set -x
 
-# Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # Parameters for the GA/CMA
 ITERATIONS=10

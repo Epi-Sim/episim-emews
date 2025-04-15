@@ -1,4 +1,5 @@
 # This environemnetal variables are required to used the self-contained julia version
+BASE_FOLDER=$(realpath ..)
 export PATH=$PATH:${BASE_FOLDER}/julia/bin
 export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
 
@@ -56,7 +57,7 @@ setup_test_experiment() {
   #################################################################
 
   if [ ! -d "${BASE_DATA_FOLDER}" ]; then
-      echo "Base data folder ${BASE_DATA_FOLDER} doe not exists"
+      echo "Base data folder ${BASE_DATA_FOLDER} does not exist"
       exit;
   fi
 
@@ -71,7 +72,7 @@ setup_test_experiment() {
   #################################################################
   
   if [ ! -f "${BASE_CONFIG_JSON}" ]; then
-      echo "Base config file ${BASE_CONFIG_JSON} doe not exists"
+      echo "Base config file ${BASE_CONFIG_JSON} does not exist"
       exit;
   fi
 
@@ -81,7 +82,7 @@ setup_test_experiment() {
   #################################################################
     
   if [ ! -f "${BASE_WORKFLOW_CONFIG}" ]; then
-      echo "Workflow config file ${BASE_WORKFLOW_CONFIG} doe not exists"
+      echo "Workflow config file ${BASE_WORKFLOW_CONFIG} does not exist"
       exit;
   fi
 

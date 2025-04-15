@@ -13,20 +13,21 @@ load_cluster_setting() {
         PPN=112
 
     elif [ $CLUSTER_NAME == "nord4" ]; then
-        LOAD_PYTHON_MODULE=""
+        module load python intel impi/2021.4.0 mkl/2021.4.0 java/8u131 R/4.1.0 swiftt/1.5.0 gcc julia/1.9.1
+        ACCOUNT=""
         MACHINE="slurm"
         QUEUE="gp_bscls"
         PPN=48
     else
-        LOAD_PYTHON_MODULE=""
+        MODULE_LOAD=""
+        ACCOUNT=""
         MACHINE="local"
         QUEUE=""
         PPN=12
     fi
 
-    export $MODULE_LOAD
-    export $ACCOUNT
-    export $MACHINE
-    export $QUEUE
-    export $PPN
+    export ACCOUNT
+    export MACHINE
+    export QUEUE
+    export PPN
 }

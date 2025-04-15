@@ -17,7 +17,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 EXPID=$1
 BASE_DATA_FOLDER=$2
 BASE_CONFIG_JSON=$3
-BASE_WORKFLOW_JSON=$4
+BASE_WORKFLOW_CONFIG=$4
 BASE_PARAMS_DEAP=$5
 STRATEGY=$6
 CLUSTER_NAME=$7
@@ -37,62 +37,22 @@ fi
 
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 
-check_directory_exists
-mkdir -p ${TURBINE_OUTPUT}
-
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
-WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
+WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
 
-####################################i##########
-# Copying data folder into turbine output
-##############################################
-if [ ! -d "${BASE_DATA_FOLDER}" ]; then
-    echo "Base data folder ${BASE_DATA_FOLDER} doe not exists"
-    exit 1;
-fi
+#################################################################
 
-if [ ! -d "${DATA_FOLDER}" ]; then
-    echo "Creating data folder at turbine output"
-    mkdir ${DATA_FOLDER}
-fi
+# function that check all files exist and creates the experiment 
+# folder ($TURBINE_OUTPUT) and copy all files required by the
+# experiments
 
-echo "Copying data files into turbine output"
-cp ${BASE_DATA_FOLDER}/* ${DATA_FOLDER}
+WORKFLOW_TYPE="DEAP"
+setup_test_experiment $WORKFLOW_TYPE
 
-##################################################
-# Copying base config file into turbine output
-##################################################
-if [ -f "${BASE_CONFIG_JSON}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_CONFIG_JSON} ${CONFIG_JSON}
-else
-  echo "Base config file ${BASE_CONFIG_JSON} doe not exists"
-  exit 1;
-fi
 
-########################################################
-# Copying base workflow config file into turbine output
-########################################################
-if [ -f "${BASE_WORKFLOW_JSON}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_WORKFLOW_JSON} ${WORKFLOW_JSON}
-else
-  echo "Base config file ${BASE_WORKFLOW_JSON} doe not exists"
-  exit 1;
-fi
-
-##################################################
-# Copying base config file into turbine output
-##################################################
-if [ -f "${BASE_PARAMS_DEAP}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_PARAMS_DEAP} ${PARAMS_DEAP}
-else
-  echo "Base param sweep file ${BASE_PARAMS_DEAP} doe not exists"
-  exit 1;
-fi
+#################################################################
 
 # Python Libraries
 export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
@@ -140,7 +100,7 @@ SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
-               -w=${WORKFLOW_JSON}
+               -w=${WORKFLOW_CONFIG}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
                -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"

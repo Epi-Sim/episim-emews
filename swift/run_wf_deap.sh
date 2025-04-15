@@ -26,12 +26,15 @@ CLUSTER_NAME=$7
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
+
+
+load_cluster_setting $CLUSTER_NAME
+echo "Load required modules and exporting CLUSTER settings"
+
 source $EMEWS_PROJECT_ROOT/venv/bin/activate
 
-load_cluster_setting $MACHINE_NAME
-
 if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
-    echo "Incorrect Strategy ${STRATEGY}. Posible optiones a deap_ga and deap_cmaes"
+    echo "Incorrect Strategy ${STRATEGY}. Possible options are deap_ga and deap_cmaes"
     exit 1;
 fi
 
@@ -72,12 +75,15 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 
-if [ -n "$MACHINE" ]; then
-  MACHINE="-m $MACHINE"
-elif [ "$MACHINE" == "slurm"]; then
+if [ "$MACHINE" == "slurm" ]; then
   export TURBINE_LAUNCHER="srun"
   export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
 fi
+
+if [ -n "$MACHINE" ]; then
+  MACHINE="-m $MACHINE"
+fi
+
 
 
 # log variables and script to to TURBINE_OUTPUT directory

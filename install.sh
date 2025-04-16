@@ -4,6 +4,8 @@ JULIA_URL="https://julialang-s3.julialang.org/bin/linux/x64/1.11/${JULIA_VERSION
 
 source $BASE_FOLDER/config.sh
 
+eval "$LOAD_PYTHON_MODULE"
+
 echo " - Step 1 Installing Julia..."
 if [ ! -d "julia" ]; then
   echo "- Downloading Julia..."
@@ -72,6 +74,6 @@ echo "To run the simulation, use the command: ./model/episim <arguments>"
 
 cd $BASE_FOLDER
 echo " - Step 4 Installing python requirements"
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt 

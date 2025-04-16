@@ -8,11 +8,11 @@ CLUSTER_NAME="mn5"
 ACCOUNT="bsc08"
 
 if [ $CLUSTER_NAME == "mn5" ]; then
-    LOAD_PYTHON_MODULE="module load python/3.12.1"
+    LOAD_PYTHON_MODULE="module load hdf5 python/3.12.1"
     MACHINE="slurm"
     QUEUE="gp_debug"
 elif [ $CLUSTER_NAME == "nord4" ]; then
-    LOAD_PYTHON_MODULE="module load python/3.10.15"
+    LOAD_PYTHON_MODULE="module load hdf5 python/3.10.15"
     MACHINE="slurm"
 else
     LOAD_PYTHON_MODULE=""

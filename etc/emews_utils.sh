@@ -52,7 +52,7 @@ setup_test_experiment() {
   WORKFLOW_TYPE=$1
   check_directory_exists
   rm -fr "${TURBINE_OUTPUT}"
-  mkdir ${TURBINE_OUTPUT}
+  mkdir -p ${TURBINE_OUTPUT}
 
   #################################################################
 

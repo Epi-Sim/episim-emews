@@ -8,7 +8,7 @@ set -eu
 
 if [ "$#" -ne 7 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4/local)"
   exit 1
 fi
 
@@ -31,7 +31,7 @@ source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
 load_cluster_setting $CLUSTER_NAME
 echo "Load required modules and exporting CLUSTER settings"
 
-source $EMEWS_PROJECT_ROOT/venv/bin/activate
+
 
 if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     echo "Incorrect Strategy ${STRATEGY}. Possible options are deap_ga and deap_cmaes"
@@ -57,16 +57,14 @@ setup_test_experiment $WORKFLOW_TYPE
 
 #################################################################
 
-# Python Libraries
-export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
-export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
+
 
 # Computing Resources
 export PROCS=336
 export PROJECT=bsc08
 export WALLTIME=02:00:00
 
-# Turbine Spacific
+# Turbine Specific
 export DEBUG_MODE=2
 export TURBINE_JOBNAME="${EXPID}_job"
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -76,6 +74,7 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # or empty for an immediate non-queued unscheduled run
 
 if [ "$MACHINE" == "slurm" ]; then
+  source $EMEWS_PROJECT_ROOT/venv/bin/activate
   export TURBINE_LAUNCHER="srun"
   export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
 fi
@@ -84,6 +83,9 @@ if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
 fi
 
+# Python Libraries
+export PYTHONPATH="${PYTHONPATH:-}:${EMEWS_PROJECT_ROOT}/python"
+export PYTHONPATH="${PYTHONPATH:-}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
 
 
 # log variables and script to to TURBINE_OUTPUT directory

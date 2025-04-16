@@ -19,11 +19,10 @@ load_cluster_setting() {
         QUEUE="gp_bscls"
         PPN=48
     else
-        MODULE_LOAD=""
         ACCOUNT=""
-        MACHINE="local"
+        MACHINE=""
         QUEUE=""
-        PPN=12
+        PPN=6
     fi
 
     export ACCOUNT

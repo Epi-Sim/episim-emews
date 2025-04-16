@@ -18,7 +18,7 @@ set -eu
 
 if [ "$#" -ne 6 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WOKFLOW_JSON PARAMS_SWEEP CLUSTER_NAME (mn5/nord3/local)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WOKFLOW_JSON PARAMS_SWEEP CLUSTER_NAME (mn5/nord4/local)"
   exit 1
 fi
 

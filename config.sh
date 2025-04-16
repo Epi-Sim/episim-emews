@@ -16,6 +16,6 @@ elif [ $CLUSTER_NAME == "nord4" ]; then
     MACHINE="slurm"
 else
     LOAD_PYTHON_MODULE=""
-    MACHINE="local"
+    MACHINE=""
 fi
  

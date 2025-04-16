@@ -30,13 +30,7 @@ PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
 WORKFLOW_TYPE="DEAP"
 setup_test_experiment $WORKFLOW_TYPE
 
-if [ ! -f "${BASE_PARAMS_DEAP}" ]; then
-    echo "Sweep file ${BASE_PARAMS_DEAP} does not exist"
-    exit;
-fi
 
-echo "Copying base deap params file into turbine output"
-cp ${BASE_PARAMS_DEAP} ${PARAMS_DEAP}
 
 # Resident task workers and ranks
 export PROCS=5

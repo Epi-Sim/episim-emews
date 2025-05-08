@@ -70,7 +70,7 @@ fi
 echo "EpiSim.jl installed successfully."
 echo "To run the simulation, use the command: ./model/episim <arguments>"
 
-cp $BASE_FOLDER
+cd $BASE_FOLDER
 echo " - Step 4 Installing python requirements"
 python -m venv venv
 source venv/bin/activate

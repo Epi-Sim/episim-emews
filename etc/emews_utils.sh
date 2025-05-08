@@ -1,3 +1,7 @@
+# This environemnetal variables are required to used the self-contained julia version
+export PATH=$PATH:${BASE_FOLDER}/julia/bin
+export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
+
 log_script() {
   SCRIPT_NAME=$(basename $0)
   mkdir -p $TURBINE_OUTPUT

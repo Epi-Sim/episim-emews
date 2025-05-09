@@ -24,9 +24,8 @@ PARAMS_SWEEP="${TURBINE_OUTPUT}/sweep_params.txt"
 #################################################################
 # source some utility functions used by EMEWS in this script
 
-
 WORKFLOW_TYPE="SWEEP"
-setup_test_experiment $WORKFLOW_TYPE
+setup_experiment $WORKFLOW_TYPE
 
 #################################################################
 

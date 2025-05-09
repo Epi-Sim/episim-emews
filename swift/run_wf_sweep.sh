@@ -43,7 +43,7 @@ CLUSTER_NAME=$6
 # experiments
 
 WORKFLOW_TYPE="SWEEP"
-setup_test_experiment $WORKFLOW_TYPE
+setup_experiment $WORKFLOW_TYPE
 
 #################################################################
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),

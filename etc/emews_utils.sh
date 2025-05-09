@@ -46,7 +46,7 @@ check_directory_exists() {
 
 }
 
-setup_test_experiment() {
+setup_experiment() {
   
   WORKFLOW_TYPE=$1
   check_directory_exists

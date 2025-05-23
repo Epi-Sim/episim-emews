@@ -8,12 +8,12 @@ CPUS="${CPUS:-3}"
 T="${T:-00:20:00}"
 CLUSTER_NAME="${CLUSTER_NAME:-local}"
 ACCOUNT="${ACCOUNT:-bsc08}"
-
+MEM=""
 # Handle different cluster configurations
 if [ "$CLUSTER_NAME" == "mn5" ]; then
     MACHINE="slurm"
     ACCOUNT="bsc08"
-    QUEUE="${QUEUE:-gp_bscls}"
+    QUEUE="gp_debug" # gp_bscls
     LOAD_MODULES="module load swig java-jdk/8u131 ant/1.10.14 R/4.3.2 zsh hdf5 python/3.12.1 swiftt/1.6.2-python-3.12.1"
     PPN=112
 elif [ "$CLUSTER_NAME" == "nord4" ]; then

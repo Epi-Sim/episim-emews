@@ -24,7 +24,8 @@ echo " - Step 1 Installing Julia..."
 if [ ! -d "julia" ]; then
   echo "- Downloading Julia..."
   wget $JULIA_URL
-  tar -xvzf ${JULIA_VERSION}
+  echo "- Extracting Julia..."
+  tar -xzf ${JULIA_VERSION}
   mv julia-1.11.4 julia
   rm $JULIA_VERSION
 else

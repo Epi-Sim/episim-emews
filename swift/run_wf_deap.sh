@@ -56,7 +56,7 @@ NUM_OBJECTIVES=1
 CLUSTER_NAME=$7
 
 # This will load all the required env variables
-source "${EMEWS_PROJECT_ROOT}/config.sh"
+source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
 
 if [ -n "$LOAD_MODULES" ]; then
   echo "Loading required module: $LOAD_MODULES"

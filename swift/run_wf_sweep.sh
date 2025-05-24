@@ -39,7 +39,7 @@ PARAMS_SWEEP="${TURBINE_OUTPUT}/sweep_params.txt"
 CLUSTER_NAME=$6
 
 # This will load all the required env variables
-source "${EMEWS_PROJECT_ROOT}/config.sh"
+source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
 
 if [ -n "$LOAD_MODULES" ]; then
   echo "Loading required module: $LOAD_MODULES"

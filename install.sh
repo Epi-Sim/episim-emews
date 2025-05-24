@@ -38,7 +38,6 @@ echo " - Time limit: $T"
 # Source cluster_settings.sh - all other parameters will be determined based on CLUSTER_NAME
 source "${BASE_FOLDER}/etc/cluster_settings.sh"
 
-exit
 ##################################################################
 
 echo " === Step 1 Installing Julia === "

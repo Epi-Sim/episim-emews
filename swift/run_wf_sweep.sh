@@ -63,20 +63,16 @@ export PROCS=12
 export PPN
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
+
 export TURBINE_JOBNAME="${EXPID}_job"
 
-if [ "$MACHINE" == "slurm" ]; then
-  if [ -n ${QUEUE} ]; then
-    export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
-  fi
-  export TURBINE_LAUNCHER="srun"
-fi
-
 #################################################################
+
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 # echo's anything following this standard out
 set -x
+
 #################################################################
 
 # Swift custom libraries
@@ -85,12 +81,18 @@ SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 # Swift workflow script
 SWIFT_WF="${SWIFT_PATH}/run_wf_sweep.swift"
 
-CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG} -f=${PARAMS_SWEEP}"
+# Command line arguments for swift workflow
+WF_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG} -f=${PARAMS_SWEEP}"
 
-if [ -n "$MACHINE" ]; then
-  swift-t -p -n $PROCS -m $MACHINE -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+
+if [ "$MACHINE" == "slurm" ]; then
+  export TURBINE_LAUNCHER="srun"
+  if [ -n ${QUEUE} ]; then
+    export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
+  fi
+  swift-t -p -n $PROCS -m $MACHINE -I $SWIFT_PATH  $SWIFT_WF  $WF_ARGS
 else
-  swift-t -p -n $PROCS -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+  swift-t -p -n $PROCS -I $SWIFT_PATH  $SWIFT_WF  $WF_ARGS
 fi
 
 

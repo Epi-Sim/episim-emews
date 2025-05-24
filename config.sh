@@ -25,12 +25,13 @@ elif [ "$CLUSTER_NAME" == "nord4" ]; then
 elif [ "$CLUSTER_NAME" == "elastic" ]; then
     MACHINE="slurm"
     # Define memory for elastic cluster (no ACCOUNT or QUEUE needed)
-    MEM="${MEM:-15G}"
+    MEM="14G"
     # Clear ACCOUNT and QUEUE to trigger the memory-based allocation
     ACCOUNT=""
     QUEUE=""
     # Clear LOAD_MODULES
     LOAD_MODULES=""
+    PPN=8
 else
     LOAD_MODULES=""
     MACHINE="local"

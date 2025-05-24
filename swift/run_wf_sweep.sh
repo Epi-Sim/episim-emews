@@ -7,7 +7,7 @@ export DEBUG_MODE=2
 
 export EMEWS_PROJECT_ROOT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
-export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
+
 
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -82,8 +82,8 @@ set -x
 # Swift custom libraries
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
 
-# Swift workflow
-SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
+# Swift workflow script
+SWIFT_WF="${SWIFT_PATH}/run_wf_sweep.swift"
 
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG} -f=${PARAMS_SWEEP}"
 

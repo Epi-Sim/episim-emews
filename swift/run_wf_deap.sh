@@ -29,8 +29,8 @@ DATA_FOLDER="${TURBINE_OUTPUT}/data"
 BASE_CONFIG_JSON=$3
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 
-BASE_WORKFLOW_JSON=$4
-WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
+BASE_WORKFLOW_CONFIG=$4
+WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 
 BASE_PARAMS_DEAP=$5
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
@@ -73,7 +73,7 @@ source $EMEWS_PROJECT_ROOT/venv/bin/activate
 # experiments
 
 WORKFLOW_TYPE="DEAP"
-setup_test_experiment $WORKFLOW_TYPE
+setup_experiment $WORKFLOW_TYPE
 
 #################################################################
 # Computing Resources
@@ -109,12 +109,10 @@ EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
-               -w=${WORKFLOW_JSON}
+               -w=${WORKFLOW_CONFIG}
                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
                -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
                -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
-
-swift-t -p  -n $PROCS $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
 
 if [ -n "$MACHINE" ]; then
   swift-t -p -n $PROCS -m $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS

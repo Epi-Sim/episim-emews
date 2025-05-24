@@ -2,7 +2,7 @@
     "postprocessing": {
         "input_fname":  "observables.nc",
         "output_fname": "obs_agg.nc",
-        "remove_input": false,
+        "remove_input": true,
         "steps": [
             {
                 "function": "aggregate_simulation",

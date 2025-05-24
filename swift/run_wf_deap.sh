@@ -3,6 +3,14 @@
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
 # export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export DEBUG_MODE=2
+
+export EMEWS_PROJECT_ROOT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
+export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
+export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
+
+# source some utility functions used by EMEWS in this script
+source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 set -eu
 
@@ -12,132 +20,93 @@ if [ "$#" -ne 7 ]; then
   exit 1
 fi
 
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-
 EXPID=$1
+export TURBINE_OUTPUT="${EMEWS_PROJECT_ROOT}/experiments/${EXPID}"
+
 BASE_DATA_FOLDER=$2
+DATA_FOLDER="${TURBINE_OUTPUT}/data"
+
 BASE_CONFIG_JSON=$3
+CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
+
 BASE_WORKFLOW_JSON=$4
+WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
+
 BASE_PARAMS_DEAP=$5
+PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
+
+#################################################################
+
 STRATEGY=$6
-CLUSTER_NAME=$7
-
-
-# source some utility functions used by EMEWS in this script
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
-source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
-source $EMEWS_PROJECT_ROOT/venv/bin/activate
-
-load_cluster_setting $MACHINE_NAME
 
 if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     echo "Incorrect Strategy ${STRATEGY}. Posible optiones a deap_ga and deap_cmaes"
     exit 1;
 fi
 
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+# Parameters for the DEAP ALGORITHM GA/CMA
+ITERATIONS=10
+NUM_POPULATION=50
+SEED=1234
+SIGMA=1
+NUM_OBJECTIVES=1
 
-check_directory_exists
-mkdir -p ${TURBINE_OUTPUT}
+#################################################################
 
-DATA_FOLDER="${TURBINE_OUTPUT}/data"
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
-WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
-PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
+CLUSTER_NAME=$7
 
-####################################i##########
-# Copying data folder into turbine output
-##############################################
-if [ ! -d "${BASE_DATA_FOLDER}" ]; then
-    echo "Base data folder ${BASE_DATA_FOLDER} doe not exists"
-    exit 1;
+# This will load all the required env variables
+source "${EMEWS_PROJECT_ROOT}/config.sh"
+
+if [ -n "$LOAD_MODULES" ]; then
+  echo "Loading required module: $LOAD_MODULES"
+  eval $LOAD_MODULES
 fi
 
-if [ ! -d "${DATA_FOLDER}" ]; then
-    echo "Creating data folder at turbine output"
-    mkdir ${DATA_FOLDER}
-fi
+source $EMEWS_PROJECT_ROOT/venv/bin/activate
 
-echo "Copying data files into turbine output"
-cp ${BASE_DATA_FOLDER}/* ${DATA_FOLDER}
+#################################################################
 
-##################################################
-# Copying base config file into turbine output
-##################################################
-if [ -f "${BASE_CONFIG_JSON}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_CONFIG_JSON} ${CONFIG_JSON}
-else
-  echo "Base config file ${BASE_CONFIG_JSON} doe not exists"
-  exit 1;
-fi
+#################################################################
+# function that check all files exist and creates the experiment 
+# folder ($TURBINE_OUTPUT) and copy all files required by the
+# experiments
 
-########################################################
-# Copying base workflow config file into turbine output
-########################################################
-if [ -f "${BASE_WORKFLOW_JSON}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_WORKFLOW_JSON} ${WORKFLOW_JSON}
-else
-  echo "Base config file ${BASE_WORKFLOW_JSON} doe not exists"
-  exit 1;
-fi
+WORKFLOW_TYPE="DEAP"
+setup_test_experiment $WORKFLOW_TYPE
 
-##################################################
-# Copying base config file into turbine output
-##################################################
-if [ -f "${BASE_PARAMS_DEAP}" ]; then
-  echo "Copying base config file into turbine output"
-  cp ${BASE_PARAMS_DEAP} ${PARAMS_DEAP}
-else
-  echo "Base param sweep file ${BASE_PARAMS_DEAP} doe not exists"
-  exit 1;
-fi
-
-# Python Libraries
-export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
-export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
-
+#################################################################
 # Computing Resources
-export PROCS=336
-export PROJECT=bsc08
-export WALLTIME=02:00:00
 
-# Turbine Spacific
-export DEBUG_MODE=2
+export PROCS=112
+export PPN
+export PROJECT=${ACCOUNT}
+export WALLTIME=02:00:00
 export TURBINE_JOBNAME="${EXPID}_job"
+
+if [ "$MACHINE" == "slurm"]; then
+  if [ -n ${QUEUE} ]; then
+    export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
+  fi
+  export TURBINE_LAUNCHER="srun"
+fi
+
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
-# set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
-# or empty for an immediate non-queued unscheduled run
-
-if [ -n "$MACHINE" ]; then
-  MACHINE="-m $MACHINE"
-elif [ "$MACHINE" == "slurm"]; then
-  export TURBINE_LAUNCHER="srun"
-  export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
-fi
-
-
+#################################################################
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 # echo's anything following this standard out
 set -x
+#################################################################
 
-
-# Parameters for the GA/CMA
-ITERATIONS=10
-NUM_POPULATION=5
-SEED=1234
-SIGMA=1
-NUM_OBJECTIVES=3
-
+# Swift custom libraries
 SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
-SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
-
-# EQ/Py location
 EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
+
+# Swift workflow
+SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 
 CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
                -w=${WORKFLOW_JSON}
@@ -146,5 +115,11 @@ CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
                -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
 
 swift-t -p  -n $PROCS $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+
+if [ -n "$MACHINE" ]; then
+  swift-t -p -n $PROCS -m $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+else
+  swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+fi
 
 

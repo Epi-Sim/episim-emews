@@ -2,30 +2,16 @@
 # Usage: ./install.sh [CLUSTER_NAME]
 # Example: ./install.sh elastic
 
-# Use environment variable if set, otherwise use default
-# Compilation parameters
-
-
-################################################################## 
-
-JULIA_VERSION=julia-1.11.4-linux-x86_64.tar.gz
-JULIA_URL="https://julialang-s3.julialang.org/bin/linux/x64/1.11/${JULIA_VERSION}"
-
-export PATH=$PATH:${BASE_FOLDER}/julia/bin
-export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
+# Set cluster name from command line argument or use default
+export CLUSTER_NAME="${1:-local}"
 
 BASE_FOLDER=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 
 ##################################################################
 
-# Set cluster name from command line argument or use default
-export CLUSTER_NAME="${1:-local}"
-
-##################################################################
-
 # Compilation parameters
 COMPILE="yes"
-CPUS="4"
+CPUS="8"
 T="00:20:00"
 
 echo "######################################################"
@@ -39,6 +25,12 @@ echo " - Time limit: $T"
 source "${BASE_FOLDER}/etc/cluster_settings.sh"
 
 ##################################################################
+
+JULIA_VERSION=julia-1.11.4-linux-x86_64.tar.gz
+JULIA_URL="https://julialang-s3.julialang.org/bin/linux/x64/1.11/${JULIA_VERSION}"
+
+export PATH=$PATH:${BASE_FOLDER}/julia/bin
+export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
 
 echo " === Step 1 Installing Julia === "
 if [ ! -d "julia" ]; then

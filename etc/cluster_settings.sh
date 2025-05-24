@@ -1,5 +1,5 @@
 CLUSTER_NAME="${CLUSTER_NAME:-linux}"
-
+MEM="${MEM:-}"
 # Handle different cluster configurations
 if [ "$CLUSTER_NAME" == "mn5" ]; then
     MACHINE="slurm"

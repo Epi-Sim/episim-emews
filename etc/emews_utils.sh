@@ -1,5 +1,5 @@
 # This environemnetal variables are required to used the self-contained julia version
-BASE_FOLDER=$( cd $( dirname $0 )/.. ; /bin/pwd )
+BASE_FOLDER="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 export PATH=$PATH:${BASE_FOLDER}/julia/bin
 export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
 

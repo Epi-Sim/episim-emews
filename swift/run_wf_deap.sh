@@ -84,7 +84,7 @@ export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 export TURBINE_JOBNAME="${EXPID}_job"
 
-if [ "$MACHINE" == "slurm"]; then
+if [ "$MACHINE" == "slurm" ]; then
   if [ -n ${QUEUE} ]; then
     export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
   fi

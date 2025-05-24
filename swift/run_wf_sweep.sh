@@ -7,6 +7,7 @@ export DEBUG_MODE=2
 
 export EMEWS_PROJECT_ROOT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/python"
+export PYTHONPATH="${PYTHONPATH}:${EMEWS_PROJECT_ROOT}/ext/EQ-Py"
 
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -64,7 +65,7 @@ export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 export TURBINE_JOBNAME="${EXPID}_job"
 
-if [ "$MACHINE" == "slurm"]; then
+if [ "$MACHINE" == "slurm" ]; then
   if [ -n ${QUEUE} ]; then
     export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
   fi

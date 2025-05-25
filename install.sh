@@ -77,7 +77,7 @@ if [ $COMPILE == "yes" ]; then
       Q="-q $QUEUE"
       srun --unbuffered -t $T $A $Q -c $CPUS -n 1 $CMD |& cat
     else
-      MEM={$MEM:-15}
+      MEM=${MEM:-15G}
       echo " - No account and queue defined, using memory allocation instead"
       echo " - Using $MEM memory"
       srun --unbuffered -t $T --mem=$MEM -c $CPUS -n 1 $CMD |& cat

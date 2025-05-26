@@ -1,4 +1,5 @@
 # This environemnetal variables are required to used the self-contained julia version
+BASE_FOLDER="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 export PATH=$PATH:${BASE_FOLDER}/julia/bin
 export JULIA_DEPOT_PATH=${BASE_FOLDER}/.julia
 
@@ -46,7 +47,7 @@ check_directory_exists() {
 
 }
 
-setup_test_experiment() {
+setup_experiment() {
   
   WORKFLOW_TYPE=$1
   check_directory_exists

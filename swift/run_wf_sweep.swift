@@ -30,7 +30,7 @@ string workflow_path = argv("w");
 // Get .txt files having the parameters to evaluate
 string params_fname = argv("f");
 
-printf("=================================================");
+printf("=================================================") =>
 printf("- Starting EpiSim-EMEWS parameter sweep workflow") =>
 // Checking all requirments 
 check_requirements() => {
@@ -51,14 +51,13 @@ check_requirements() => {
   // Iterating over the list of parameters sets
   string upf_lines[] = file_lines(upf) =>
   printf("=================================================") =>
-  printf("- Beginning parallel sweep!");
+  printf("- Beginning parallel sweep!") => 
   printf("  . Evaluating %i parameter sets" % (size(upf_lines))) => {
     foreach string_params,i in upf_lines {
       // define the instance path
-      string instance_dir = "%s/instance_%i" % (turbine_output, i+1);
+      string instance_dir = "%s/instance_%i" % (turbine_output, i+1) =>
       // call the functions that will do the magic (create folder, run model, postprocess, collect results)
       string result = run_obj(instance_dir, base_config, string_params);
     }
   }
-  printf("- Finish EpiSim-EMEWS workflow");
 }

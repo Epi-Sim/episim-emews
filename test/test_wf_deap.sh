@@ -11,6 +11,8 @@ export DEBUG_MODE=2
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
+
+
 #################################################################
 
 BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/test"
@@ -28,7 +30,7 @@ PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
 #################################################################
 
 WORKFLOW_TYPE="DEAP"
-setup_test_experiment $WORKFLOW_TYPE
+setup_experiment $WORKFLOW_TYPE
 
 if [ ! -f "${BASE_PARAMS_DEAP}" ]; then
     echo "Sweep file ${BASE_PARAMS_DEAP} does not exist"

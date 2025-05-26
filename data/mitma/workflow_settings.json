@@ -2,7 +2,7 @@
     "postprocessing": {
         "input_fname":  "observables.nc",
         "output_fname": "obs_agg.nc",
-        "remove_input": false,
+        "remove_input": true,
         "steps": [
             {
                 "function": "aggregate_simulation",
@@ -11,48 +11,13 @@
         ]
     },
     "evaluation": {
-    	"steps":[
-    	    { 
-    	    	"function": "compute_MAPE",
-    	    	"input_fname": "obs_agg.nc",
-    	    	"parameters":{
-	    		"epidata_fname": "real_observables.nc",
-	    	    	"epi_variable": ["new_deaths", "new_hospitalized"],
-	    	    	"level" : "global",
-	    	    	"scale": "1e5"
-	    	 }
-	    },
-	    {
-    	    	 "function": "compute_MAPE",
-    	    	 "input_fname": "obs_agg.nc",
-    	    	 "parameters":{
-	    	    	 "epidata_fname": "real_observables.nc",
-	    	    	 "epi_variable": ["new_deaths", "new_hospitalized"],
-	    	    	 "level" : "prov_age",
-	    	    	 "scale": "1e5"
-	    	  } 	    	    	    
-    	    },
-    	    {
-    	     
-		"function": "fit_objectives",
+		"function": "dummy_evaluate",
+		"input_fname": "obs_agg.nc",
 		"parameters":{
-			"num_objectives": "2",
-			"parameters":[ 
-			     {
-			     	    "metric": "MAPE",
-				    "level": "global",
-				    "epi_variable":  "new_deaths"
-			     },
-			     {
-			     	    "metric": "MAPE",
-				    "level": "prov_age",
-				    "epi_variable": "new_hospitalized",
-				    "M": "01",
-				    "G": "Y"
-			     }
-			 ]
+			"epidata_fname": "real_observables.nc",
+			"epi_variable":  "new_deaths",
+			"level" : "global",
+			"scale": "1e5"
 		}
-	     }
-	]
     }
 }

@@ -29,8 +29,8 @@ DATA_FOLDER="${TURBINE_OUTPUT}/data"
 BASE_CONFIG_JSON=$3
 CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
 
-BASE_WORKFLOW_JSON=$4
-WORKFLOW_JSON="${TURBINE_OUTPUT}/workflow_settings.json"
+BASE_WORKFLOW_CONFIG=$4
+WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
 
 BASE_PARAMS_DEAP=$5
 PARAMS_DEAP="${TURBINE_OUTPUT}/deap_params.json"
@@ -56,7 +56,7 @@ NUM_OBJECTIVES=1
 CLUSTER_NAME=$7
 
 # This will load all the required env variables
-source "${EMEWS_PROJECT_ROOT}/config.sh"
+source "${EMEWS_PROJECT_ROOT}/etc/cluster_settings.sh"
 
 if [ -n "$LOAD_MODULES" ]; then
   echo "Loading required module: $LOAD_MODULES"
@@ -73,32 +73,28 @@ source $EMEWS_PROJECT_ROOT/venv/bin/activate
 # experiments
 
 WORKFLOW_TYPE="DEAP"
-setup_test_experiment $WORKFLOW_TYPE
+setup_experiment $WORKFLOW_TYPE
 
 #################################################################
-# Computing Resources
+
+# Computing Resources and turbine params
 
 export PROCS=112
 export PPN
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
+
 export TURBINE_JOBNAME="${EXPID}_job"
-
-if [ "$MACHINE" == "slurm"]; then
-  if [ -n ${QUEUE} ]; then
-    export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
-  fi
-  export TURBINE_LAUNCHER="srun"
-fi
-
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 #################################################################
+
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 # echo's anything following this standard out
 set -x
+
 #################################################################
 
 # Swift custom libraries
@@ -108,18 +104,19 @@ EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 # Swift workflow
 SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 
-CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
-               -w=${WORKFLOW_JSON}
-               -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
-               -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
-               -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
+$WF_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
+          -w=${WORKFLOW_CONFIG}
+          -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
+          -np=${NUM_POPULATION}  -ni=${ITERATIONS}  
+          -seed=${SEED}  -sigma=${SIGMA} -nobjs=${NUM_OBJECTIVES}"
 
-swift-t -p  -n $PROCS $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
 
-if [ -n "$MACHINE" ]; then
-  swift-t -p -n $PROCS -m $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+if [ "$MACHINE" == "slurm" ]; then
+  export TURBINE_LAUNCHER="srun"
+  if [ -n ${QUEUE} ]; then
+    export TURBINE_SBATCH_ARGS="--qos=${QUEUE}"
+  fi
+  swift-t -p -n $PROCS -m $MACHINE -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $WF_ARGS
 else
-  swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $CMD_LINE_ARGS
+  swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_WF  $WF_ARGS
 fi
-
-

@@ -12,6 +12,7 @@ from postprocessing import scale_by_population
 def compute_MAPE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
                  epi_variable=['new_hospitalized', 'new_deaths'], level='global',
                  **kwargs):
+    
     config_fname = os.path.join(instance_folder, "config.json")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
@@ -142,8 +143,8 @@ def fit_objectives(instance_folder, num_objectives, parameters,  **kwargs):
     metric_list = ','.join(map(str,metric_list))
     return metric_list
 
-def dummy_evaluate(instance_folder, **kwargs):
-    return 0
+def dummy_evaluate(simdata_ds, instance_folder, data_folder, **kwargs):
+    return -1
 
 #################################################################
 
@@ -162,20 +163,26 @@ def evaluate_obj(instance_folder, data_folder, workflow_config_fname):
 
     evaluation_dict = workflow_config.get('evaluation', None)
     if evaluation_dict is None:
-        raise Exception("Can't perform evalaute_obj missing key evalaute in workflow config")
+        raise Exception("Error: Can't perform evaluate_obj missing key evaluate entry in workflow config")
 
-    for step in evaluation_dict["steps"]:
-        function_name   = step["function"]
-        input_fname     =  step.get("input_fname", None)
-        parameters_dict = step.get("parameters", {})       
+    function_name   = evaluation_dict.get("function", None)
+    evaluate_function = evaluate_function_map.get(function_name, None)
+    if evaluate_function is None:
+        raise Exception(f"Error: evaluate_function \"{function_name}\" not defined in evaluate_function_map")
+
+
+    parameters_dict = evaluation_dict.get("parameters", {})
+    input_fname     = evaluation_dict.get("input_fname", None)
+    input_fname     = os.path.join(output_folder, input_fname)
+    sim_ds = xr.load_dataset(input_fname)
     
-        evaluate_function = evaluate_function_map[function_name]  
-        if input_fname:
-            input_fname = os.path.join(output_folder, input_fname)
-            sim_ds = xr.load_dataset(input_fname)
-            evaluate_function(sim_ds, instance_folder, data_folder, **parameters_dict)
-        else:
-            fitness = evaluate_function(instance_folder, **parameters_dict)
+    
+    if input_fname:
+        input_fname = os.path.join(output_folder, input_fname)
+        sim_ds = xr.load_dataset(input_fname)
+        fitness = evaluate_function(sim_ds, instance_folder, data_folder, **parameters_dict)
+    else:
+        fitness = evaluate_function(instance_folder, **parameters_dict)
         
     return fitness
 

@@ -59,7 +59,7 @@ app (file out, file err) run_model (string instance, string config) {
 
 string update_json_template = """
 import json
-import utils
+import episim_utils
 config_base_fname  = '%s'
 config_out_fname   = '%s'
 params_strn        = '%s'
@@ -70,7 +70,7 @@ update_dict = json.loads(params_strn)
 with open(config_base_fname, encoding='utf-8') as fh:
     config_base = json.load(fh)
 
-config_dict = utils.update_params(config_base, update_dict)
+config_dict = episim_utils.update_params(config_base, update_dict)
 
 with open(config_out_fname, 'w', encoding='utf-8') as fh:
     json.dump(config_dict, fh, indent=4)
@@ -89,13 +89,15 @@ with open(config_out_fname, 'w', encoding='utf-8') as fh:
 string postprocess_obj_template = """
 import os
 import json
-from postprocessing import postprocess_obj
+import episim_postprocessing
+import episim_plots
 
 instance_folder = '%s'
 data_folder     = '%s'
 wf_config_fname = '%s'
 
-output_fname = postprocess_obj(instance_folder, data_folder, wf_config_fname)
+output_fname = episim_postprocessing.postprocess_obj(instance_folder, data_folder, wf_config_fname)
+total_figs = episim_plots.plot_obj(instance_folder, data_folder, wf_config_fname)
 """;
 (string output_fname) postprocess_obj(string instance, string data_folder, string wf_cfg) {
  string py_code = postprocess_obj_template % (instance, data_folder, wf_cfg);
@@ -109,13 +111,13 @@ output_fname = postprocess_obj(instance_folder, data_folder, wf_config_fname)
 string read_result_code ="""
 import os
 import json
-from evaluate import evaluate_obj
+import episim_evaluate
 
 instance_folder = '%s'
 data_folder     = '%s'
 workflow_json   = '%s'
 
-result = evaluate_obj(instance_folder, data_folder, workflow_json)
+result = episim_evaluate.evaluate_obj(instance_folder, data_folder, workflow_json)
 """;
 (string result) get_result(string instance, string data_folder, string wf_cfg) {
   string code = read_result_code % (instance, data_folder, wf_cfg);

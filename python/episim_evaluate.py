@@ -4,147 +4,10 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import xskillscore as xs
-from postprocessing import scale_by_population
-from metapopulation import Metapopulation
+import episim_utils
 
 #################################################################
 # Custom Evaluation Functions
-#################################################################
-def compute_MAPE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
-                 epi_variable=['new_hospitalized', 'new_deaths'], level='global',
-                 **kwargs):
-    
-    config_fname = os.path.join(instance_folder, "config.json")
-    with open(config_fname) as fh:
-        config_dict = json.load(fh)
-    
-    start_date = config_dict['simulation']['start_date']
-    end_date = config_dict['simulation']['end_date']
-
-    pop_fname = config_dict["data"]["metapopulation_data_filename"]
-    pop_fname = os.path.join(data_folder, pop_fname)
-
-    df_pop = pd.read_csv(pop_fname)
-
-    scale = kwargs["scale"]
-
-    epidata_fname = os.path.join(data_folder, epidata_fname)
-    epidata_ds = xr.load_dataset(epidata_fname)
-
-    epidata_ds['T'] = pd.DatetimeIndex(epidata_ds['T'].values)
-    epidata_ds = epidata_ds.sel(T=slice( start_date,end_date))
-    simdata_ds['T'] = pd.DatetimeIndex(simdata_ds['T'].values)
-    
-    epidata_xa = epidata_ds[epi_variable]
-    simdata_xa = simdata_ds[epi_variable]
-
-    output_folder = os.path.join(instance_folder, "output")
-    output_fname  = os.path.join(output_folder, f"MAPE_{level}.nc")
-
-    if level == 'global':
-        epidata_xa = epidata_xa.sum(['G', 'M'])
-        simdata_xa = simdata_xa.sum(['G', 'M'])
-    elif level == 'age':
-        epidata_xa = epidata_xa.sum(['M'])
-        simdata_xa = simdata_xa.sum(['M'])
-    elif level == 'prov':
-        epidata_xa = epidata_xa.sum(['G'])
-        simdata_xa = simdata_xa.sum(['G'])
-    elif level == 'prov_age':
-        epidata_xa = epidata_xa
-        simdata_xa = simdata_xa
-    else:
-        return "ERROR EVALUATE"
-    
-    epidata_xa = epidata_xa + 1
-    simdata_xa = simdata_xa + 1
-
-    scale_by_population(epidata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    scale_by_population(simdata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    mape_xa = xs.mape(epidata_xa, simdata_xa, dim = 'T')
-    mape_xa.to_netcdf(output_fname)
-    return mape_xa
-
-def compute_RMSE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
-                 epi_variable=['new_hospitalized', 'new_deaths'], level='global',
-                 **kwargs):
-    config_fname = os.path.join(instance_folder, "config.json")
-    with open(config_fname) as fh:
-        config_dict = json.load(fh)
-    
-    start_date = config_dict['simulation']['start_date']
-    end_date = config_dict['simulation']['end_date']
-
-    pop_fname = config_dict["data"]["metapopulation_data_filename"]
-    pop_fname = os.path.join(data_folder, pop_fname)
-
-    df_pop = pd.read_csv(pop_fname)
-
-    scale = kwargs["scale"]
-
-    epidata_fname = os.path.join(data_folder, epidata_fname)
-    epidata_ds = xr.load_dataset(epidata_fname)
-
-    epidata_ds['T'] = pd.DatetimeIndex(epidata_ds['T'].values)
-    epidata_ds = epidata_ds.sel(T=slice( start_date,end_date))
-    simdata_ds['T'] = pd.DatetimeIndex(simdata_ds['T'].values)
-    
-    epidata_xa = epidata_ds[epi_variable]
-    simdata_xa = simdata_ds[epi_variable]
-
-    output_folder = os.path.join(instance_folder, "output")
-    output_fname  = os.path.join(output_folder, f"RMSE_{level}.nc")
-
-    if level == 'global':
-        epidata_xa = epidata_xa.sum(['G', 'M'])
-        simdata_xa = simdata_xa.sum(['G', 'M'])
-    elif level == 'age':
-        epidata_xa = epidata_xa.sum(['M'])
-        simdata_xa = simdata_xa.sum(['M'])
-    elif level == 'prov':
-        epidata_xa = epidata_xa.sum(['G'])
-        simdata_xa = simdata_xa.sum(['G'])
-    elif level == 'prov_age':
-        epidata_xa = epidata_xa
-        simdata_xa = simdata_xa
-    else:
-        return "ERROR EVALUATE"
-
-    scale_by_population(epidata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    scale_by_population(simdata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    rmse_xa = xs.rmse(epidata_xa, simdata_xa, dim = 'T')
-    rmse_xa.to_netcdf(output_fname)
-    return rmse_xa
-
-def fit_objectives(instance_folder, num_objectives, parameters,  **kwargs):
-    metric_list = []
-    for i in range(int(num_objectives)):
-        level = parameters[i]['level']
-        metric = parameters[i]['metric']
-        epi_variable = parameters[i]['epi_variable']
-        metric_fname = os.path.join(instance_folder, f"output/{metric}_{level}.nc")
-        metric_ds = xr.load_dataset(metric_fname)
-        metric_xa = metric_ds[epi_variable]
-
-        
-        if level == 'global':
-            metric_list.append(float(metric_xa))
-        elif level == 'age':
-            age = parameters[i]['G']
-            metric_list.append(float(metric_xa.loc[age]))
-        elif level == 'prov':
-            prov = parameters[i]['M']
-            metric_list.append(float(metric_xa.loc[prov]))
-        elif level == 'prov_age':
-            age = parameters[i]['G']
-            prov = parameters[i]['M']
-            metric_list.append(float(metric_xa.loc[prov,age]))
-        else:
-            return "ERROR SELECT FITNESS"
-    metric_list = ','.join(map(str,metric_list))
-    return metric_list
-
-
 #################################################################
 
 
@@ -234,7 +97,7 @@ def fit_epicurves(
     pop_fname = config_dict["data"]["metapopulation_data_filename"]
     metapop_csv = os.path.join(data_folder, pop_fname)
     rosetta_csv = os.path.join(data_folder, "rosetta.csv")
-    metapop = Metapopulation(metapop_csv, rosetta_csv=rosetta_csv)
+    metapop = episim_utils.Metapopulation(metapop_csv, rosetta_csv=rosetta_csv)
     pop_da = metapop.aggregate_to_level(agg_level)
 
     # Optionally scale values by population

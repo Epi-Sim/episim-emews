@@ -45,8 +45,8 @@ if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
 fi
 
 # Parameters for the DEAP ALGORITHM GA/CMA
-ITERATIONS=10
-NUM_POPULATION=50
+ITERATIONS=3
+NUM_POPULATION=5
 SEED=1234
 SIGMA=1
 NUM_OBJECTIVES=1
@@ -79,7 +79,7 @@ setup_experiment $WORKFLOW_TYPE
 
 # Computing Resources and turbine params
 
-export PROCS=112
+export PROCS=8
 export PPN
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
@@ -104,7 +104,7 @@ EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
 # Swift workflow
 SWIFT_WF="${SWIFT_PATH}/run_wf_deap.swift"
 
-$WF_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
+WF_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON}
           -w=${WORKFLOW_CONFIG}
           -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
           -np=${NUM_POPULATION}  -ni=${ITERATIONS}  

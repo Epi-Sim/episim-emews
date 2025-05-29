@@ -141,6 +141,9 @@ def postprocess_obj(instance_folder, data_folder, workflow_config_fname):
         postprocessing_step = postprocessing_map[func_name]
         sim_ds = postprocessing_step(sim_ds, instance_folder, data_folder, **step)
 
+    if postprocess_params["remove_input"]:
+        os.remove(input_fname)
+    
     sim_ds.to_netcdf(output_fname)
     
     return output_fname

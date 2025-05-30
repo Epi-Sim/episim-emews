@@ -142,7 +142,7 @@ def run():
         strategy = cma.Strategy(centroid=centroids, sigma=sigma, lambda_=num_population, cmatrix=Cov)
     else :
         population = [creator.Individual(generate_random_array(ea_parameters)) for _ in range (num_population)] 
-        strategy = cma.StrategyMultiObjective(population=population, sigma=sigma, mu=num_population, lambda_=num_population)
+        strategy = cma.StrategyMultiObjective(population=population, sigma=sigma, mu=num_population // 2, lambda_=num_population)
     
 
     toolbox = base.Toolbox()

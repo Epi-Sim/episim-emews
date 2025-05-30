@@ -57,8 +57,8 @@ def compute_MAPE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
     epidata_xa = epidata_xa + 1
     simdata_xa = simdata_xa + 1
 
-    scale_by_population(epidata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    scale_by_population(simdata_xa, instance_folder, data_folder, scale=1e5, level=level)
+    scale_by_population(epidata_xa, instance_folder, data_folder, scale=scale, level=level)
+    scale_by_population(simdata_xa, instance_folder, data_folder, scale=scale, level=level)
     mape_xa = xs.mape(epidata_xa, simdata_xa, dim = 'T')
     mape_xa.to_netcdf(output_fname)
     return mape_xa
@@ -108,8 +108,8 @@ def compute_RMSE(simdata_ds, instance_folder, data_folder, epidata_fname=None,
     else:
         return "ERROR EVALUATE"
 
-    scale_by_population(epidata_xa, instance_folder, data_folder, scale=1e5, level=level)
-    scale_by_population(simdata_xa, instance_folder, data_folder, scale=1e5, level=level)
+    scale_by_population(epidata_xa, instance_folder, data_folder, scale=scale, level=level)
+    scale_by_population(simdata_xa, instance_folder, data_folder, scale=scale, level=level)
     rmse_xa = xs.rmse(epidata_xa, simdata_xa, dim = 'T')
     rmse_xa.to_netcdf(output_fname)
     return rmse_xa

@@ -3,82 +3,83 @@ import json
 import glob
 import pandas as pd
 
-
-
 base_folder = os.path.realpath(os.path.join(os.path.dirname(sys.argv[0]), ".."))
-
-sys.path.append(f"{base_folder}/python")
+custom_module_path = os.path.join(base_folder, "python")
+sys.path.append(custom_module_path)
 
 import episim_evaluate
 
-experiment_folder = sys.argv[1]
+def collect_results(experiment_folder):
+    
+    data_folder = os.path.join(experiment_folder, "data")
+    pattern = os.path.join(experiment_folder, "instance_*")
+    workflow_json   = os.path.join(data_folder, "workflow_settings_fit.json")
 
-data_folder = f"{experiment_folder}/data"
-pattern = f"{experiment_folder}/instance_*"
+    data_rows = []
+    #ANALYZE THE FULL EXPERIMENT LOOKING FOR THE BEST SIMULATION (min RMSE)
+    for path in glob.glob(pattern):
+        split_path = path.split("/")
+        instance = split_path[-1]
+        split_instance = instance.split("_")
+        gen = split_instance[1]
+        ind = split_instance[2]
 
-workflow_json   = os.path.join(data_folder, "workflow_settings_fit.json")
+        instance_folder = path
 
-#ANALYZE THE FULL EXPERIMENT LOOKING FOR THE BEST SIMULATION (min RMSE)
+        config_json   = os.path.join(instance_folder, "config.json")
+        with open(config_json, 'r') as f:
+            config = json.load(f)
 
-data_rows = []
+        epi_params = config.get("epidemic_params", {})
+        npi_params = config.get("NPI", {})
+        pop_params = config.get("population_params", {})
 
-for path in glob.glob(pattern):
-    split_path = path.split("/")
-    instance = split_path[-1]
-    split_instance = instance.split("_")
-    gen = split_instance[1]
-    ind = split_instance[2]
+        G_labels = pop_params.get("G_labels", [])
 
-    instance_folder = path
+        # Flatten both dictionaries and combine them
+        flat_row = {}
+        flat_row["instance_path"] = instance_folder
+        flat_row["gen"] = gen
+        flat_row["ind"] = ind
 
-    config_json   = os.path.join(instance_folder, "config.json")
-    with open(config_json, 'r') as f:
-        config = json.load(f)
+        for key, value in epi_params.items():
+            if isinstance(value, list) and len(value) == len(G_labels):
+                for label, v in zip(G_labels, value):
+                    flat_row[f"{key}{label}"] = v
+            else:
+                flat_row[key] = value
 
-    epi_params = config.get("epidemic_params", {})
-    npi_params = config.get("NPI", {})
-    pop_params = config.get("population_params", {})
-
-    G_labels = pop_params.get("G_labels", [])
-
-    # Flatten both dictionaries and combine them
-    flat_row = {}
-
-    flat_row["gen"] = gen
-    flat_row["ind"] = ind
-
-    for key, value in epi_params.items():
-        if isinstance(value, list) and len(value) == len(G_labels):
-            for label, v in zip(G_labels, value):
-                flat_row[f"{key}_{label}"] = v
-        else:
-            flat_row[key] = value
-
-    for key, value in npi_params.items():
-        if isinstance(value, list):
-            for i, v in enumerate(value):
-                flat_row[f"{key}_{i}"] = v
-        else:
-            flat_row[key] = value    
+        for key, value in npi_params.items():
+            if isinstance(value, list):
+                for i, v in enumerate(value):
+                    flat_row[f"{key}_{i}"] = v
+            else:
+                flat_row[key] = value    
 
 
-    cost = episim_evaluate.evaluate_obj(instance_folder, data_folder, workflow_json)
+        cost = episim_evaluate.evaluate_obj(instance_folder, data_folder, workflow_json)
+        flat_row["cost"] = cost
+        data_rows.append(flat_row)
 
-    flat_row["cost"] = cost
+    # Create a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data_rows)
 
-    data_rows.append(flat_row)
+    # Remove columns with only one unique value
+    df = df.loc[:, df.nunique() != 1]
 
-# Create a DataFrame from the list of dictionaries
-df = pd.DataFrame(data_rows)
+    # Sort the DataFrame by 'cost' in ascending order
+    df = df.sort_values(by=["cost"])
 
-# Remove columns with only one unique value
-df = df.loc[:, df.nunique() != 1]
+    return df
 
-# Sort the DataFrame by 'cost' in ascending order
-df = df.sort_values(by=["cost"])
 
-# Save the DataFrame to a txt file
-output_name = os.path.join(experiment_folder, "experiment_results.txt")
-df.to_csv(output_name, index=False)
-print(f"Experiment results saved to {output_name}")
+if __name__ == "__main__":
 
+    experiment_folder = sys.argv[1]
+    df = collect_results(experiment_folder)
+
+    # Save the DataFrame to a txt file
+    output_name = os.path.join(experiment_folder, "experiment_results.csv")
+
+    print(f"Writing experiment results into {output_name}")
+    df.to_csv(output_name, index=False)

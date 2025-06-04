@@ -53,11 +53,16 @@ check_requirements() => {
   printf("=================================================") =>
   printf("- Beginning parallel sweep!") => 
   printf("  . Evaluating %i parameter sets" % (size(upf_lines))) => {
+
+    string results[];
     foreach string_params,i in upf_lines {
       // define the instance path
       string instance_dir = "%s/instance_%i" % (turbine_output, i+1) =>
       // call the functions that will do the magic (create folder, run model, postprocess, collect results)
-      string result = run_obj(instance_dir, base_config, string_params);
+      results[i] = run_obj(instance_dir, base_config, string_params);
     }
+  }
+  wait (results) {
+    collect_results(collect_metrics_path);
   }
 }

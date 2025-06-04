@@ -181,7 +181,7 @@ def compute_observables(sim_xa, instance_folder, data_folder, **kwargs):
         alphas[i]     = epi_params['αᵍ'][i]
         hosp_rates[i] = (epi_params['μᵍ'][i] * (1 - epi_params['θᵍ'][i]) ) * epi_params['γᵍ'][i]
 
-    # Computing daily new assymptomatic
+    # Computing daily new asymptomatic
     # alphas_vec = np.array([alphas[g] for g in sim_xa.coords['G'].values])
     sim_observables_xa.loc['A', :, :, :] = np.multiply(sim_observables_xa.loc['A', :, :, :], alphas)
 

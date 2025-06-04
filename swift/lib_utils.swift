@@ -73,7 +73,7 @@ with open(config_base_fname, encoding='utf-8') as fh:
 config_dict = episim_utils.update_params(config_base, update_dict)
 
 with open(config_out_fname, 'w', encoding='utf-8') as fh:
-    json.dump(config_dict, fh, indent=4)
+    json.dump(config_dict, fh, indent=4, ensure_ascii=False)
 """;
 (void o) create_config(string cfg_base, string cfg_out, string strn_params) {
     string code = update_json_template % (cfg_base, cfg_out, strn_params);

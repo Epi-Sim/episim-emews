@@ -135,17 +135,22 @@ check_requirements() => {
   if (me_algo == "deap_ga"){
     string me_algo_params = "%d,%d,%d,'%s',%d" %  (iterations, population, seed, ea_params_fname, num_objs) => {
       int rank = string2int(r_ranks[0]) => {
-        start(rank, me_algo, me_algo_params) =>
-          printf("- Finshed Computation");
+        void done = start(rank, me_algo, me_algo_params)
+        wait(done) {
+          printf("- Finshed Computation") =>
+          collect_results(collect_metrics_path);
+        }
       }
     }
   }
   else if (me_algo == "deap_cmaes"){
     string me_algo_params = "%d,%d,%d,%d,'%s',%d" %  (iterations, population, sigma, seed, ea_params_fname, num_objs) => {
       int rank = string2int(r_ranks[0]) => {
-        start(rank, me_algo, me_algo_params) =>
-          printf("- Finshed Computation");
-      }
+        void done = start(rank, me_algo, me_algo_params)
+        wait(done) {
+          printf("- Finshed Computation") =>
+          collect_results(collect_metrics_path);
+        }
     }
   }
 }

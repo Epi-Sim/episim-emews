@@ -35,6 +35,10 @@ app (file out, file err) run_model (string instance, string config) {
     "bash" model_sh model_exec data_path instance config @stdout=out @stderr=err;
 }
 
+app (void o) collect_results(string script_path) {
+  "python" script_path turbine_output;
+}
+
 //========================================
 // FUNCTION TO EVALUATE A MODEL INSTANCE
 //========================================

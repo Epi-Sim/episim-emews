@@ -63,6 +63,6 @@ check_requirements() => {
     }
   }
   wait (results) {
-    collect_results(collect_metrics_path);
+    collect_metrics(collect_metrics_path);
   }
 }

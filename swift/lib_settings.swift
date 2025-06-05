@@ -19,7 +19,7 @@ string model_sh   = emews_root + "/scripts/run-episim.sh";
 string model_exec = emews_root + "/model/episim";
 
 // Path to the script that collect metrics
-string collect_metrics_path = emews_root + "scripts/collect_metrics.py";
+string collect_metrics_path = emews_root + "/scripts/collect_metrics.py";
 
 // Absolute path to files required by the model
 string data_path  = turbine_output + "/data";

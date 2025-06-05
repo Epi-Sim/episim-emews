@@ -17,16 +17,22 @@ def collect_results(experiment_folder):
 
     data_rows = []
     #ANALYZE THE FULL EXPERIMENT LOOKING FOR THE BEST SIMULATION (min RMSE)
-    for path in glob.glob(pattern):
-        split_path = path.split("/")
-        instance = split_path[-1]
-        split_instance = instance.split("_")
-        gen = split_instance[1]
-        ind = split_instance[2]
+    for instance_path in glob.glob(pattern):
 
-        instance_folder = path
+        path_pieces    = instance_path.split("/")
+        instance_id    = path_pieces[-1]
+        
+        split_instance = instance_id.split("_")
+        if len(split_instance) == 2:
+            gen = 1
+            ind = split_instance[1]
+        elif len(split_instance) == 3:
+            gen = split_instance[1]
+            ind = split_instance[2]
+        else:
+            raise Exception(f"Invalid directory name for instance {instance_id}")
 
-        config_json   = os.path.join(instance_folder, "config.json")
+        config_json   = os.path.join(instance_path, "config.json")
         with open(config_json, 'r') as f:
             config = json.load(f)
 
@@ -38,7 +44,7 @@ def collect_results(experiment_folder):
 
         # Flatten both dictionaries and combine them
         flat_row = {}
-        flat_row["instance_path"] = instance_folder
+        flat_row["instance_path"] = instance_path
         flat_row["gen"] = gen
         flat_row["ind"] = ind
 
@@ -56,8 +62,7 @@ def collect_results(experiment_folder):
             else:
                 flat_row[key] = value    
 
-
-        cost = episim_evaluate.evaluate_obj(instance_folder, data_folder, workflow_json)
+        cost = episim_evaluate.evaluate_obj(instance_path, data_folder, workflow_json)
         flat_row["cost"] = cost
         data_rows.append(flat_row)
 

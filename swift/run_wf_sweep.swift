@@ -1,3 +1,18 @@
+/*
+ * EpiSim-EMEWS Parameter Sweep Workflow
+ * -------------------------------------
+ * This script reads a set of parameter configurations from a .txt file
+ * and runs them in parallel using Swift/T and the EMEWS framework.
+ *
+ * Required arguments:
+ *   -c : Path to base config JSON
+ *   -w : Path to workflow config JSON
+ *   -f : Path to parameter sets file (.txt)
+ *
+ * Author: Miguel Ponce-de-Leon
+ * Date: 2025-06-05
+ */
+
 import io;
 import sys;
 import files;
@@ -49,6 +64,7 @@ check_requirements() => {
   // Reading file containing the list of parameters to evaluate
   file upf = input(params_fname) =>
   // Iterating over the list of parameters sets
+  
   string upf_lines[] = file_lines(upf) =>
   printf("=================================================") =>
   printf("- Beginning parallel sweep!") => 
@@ -61,8 +77,8 @@ check_requirements() => {
       // call the functions that will do the magic (create folder, run model, postprocess, collect results)
       results[i] = run_obj(instance_dir, base_config, string_params);
     }
-  }
-  wait (results) {
-    collect_metrics(collect_metrics_path);
+    wait (results) {
+      collect_metrics(collect_metrics_path);
+    }
   }
 }

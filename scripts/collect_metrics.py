@@ -81,11 +81,11 @@ def collect_results(experiment_folder):
 if __name__ == "__main__":
 
     experiment_folder = sys.argv[1]
-    print(f"- Collectiong metrics fro experiment {experiment_folder}")
+    print(f"- Collecting metrics from experiment {experiment_folder}")
     df = collect_results(experiment_folder)
 
     # Save the DataFrame to a txt file
     output_name = os.path.join(experiment_folder, "experiment_results.csv")
 
     print(f"- Writing experiment metrics into {output_name}")
-    df.to_csv(output_name, index=False)
+    df.to_csv(output_name, index=False, encoding='utf-8')

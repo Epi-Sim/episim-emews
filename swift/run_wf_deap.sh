@@ -80,7 +80,7 @@ setup_experiment $WORKFLOW_TYPE
 # Computing Resources and turbine params
 
 export PROCS=5
-export PPN
+export PPN=$PROCS
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

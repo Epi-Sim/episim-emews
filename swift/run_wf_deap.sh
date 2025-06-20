@@ -46,7 +46,7 @@ fi
 
 # Parameters for the DEAP ALGORITHM GA/CMA
 ITERATIONS=3
-NUM_POPULATION=5
+NUM_POPULATION=4
 SEED=1234
 SIGMA=1
 NUM_OBJECTIVES=1
@@ -79,7 +79,7 @@ setup_experiment $WORKFLOW_TYPE
 
 # Computing Resources and turbine params
 
-export PROCS=8
+export PROCS=5
 export PPN
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00

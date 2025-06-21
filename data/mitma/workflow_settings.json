@@ -6,7 +6,7 @@
         "steps": [
             {
                 "function": "aggregate_simulation",
-                "mapping_fname": "metapop_mapping.json"  
+                "mapping_fname": "rosetta.csv"  
             }
         ]
     },

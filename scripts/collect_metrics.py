@@ -9,11 +9,13 @@ sys.path.append(custom_module_path)
 
 import episim_evaluate
 
-def collect_results(experiment_folder):
+def collect_results(experiment_folder,  
+                    wf_config_fname="workflow_settings.json", 
+                    episim_config="episim_config.json"):
     
     data_folder = os.path.join(experiment_folder, "data")
     pattern = os.path.join(experiment_folder, "instance_*")
-    workflow_json   = os.path.join(data_folder, "workflow_settings_fit.json")
+    workflow_json   = os.path.join(data_folder, wf_config_fname)
 
     data_rows = []
     #ANALYZE THE FULL EXPERIMENT LOOKING FOR THE BEST SIMULATION (min RMSE)
@@ -32,7 +34,7 @@ def collect_results(experiment_folder):
         else:
             raise Exception(f"Invalid directory name for instance {instance_id}")
 
-        config_json   = os.path.join(instance_path, "config.json")
+        config_json   = os.path.join(instance_path, episim_config)
         with open(config_json, 'r') as f:
             config = json.load(f)
 
@@ -82,7 +84,7 @@ if __name__ == "__main__":
 
     experiment_folder = sys.argv[1]
     print(f"- Collecting metrics from experiment {experiment_folder}")
-    df = collect_results(experiment_folder)
+    df = collect_results(experiment_folder, wf_config_fname="workflow_settings.json")
 
     # Save the DataFrame to a txt file
     output_name = os.path.join(experiment_folder, "experiment_results.csv")

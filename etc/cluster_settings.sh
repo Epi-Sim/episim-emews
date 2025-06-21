@@ -8,6 +8,7 @@ if [ "$CLUSTER_NAME" == "mn5" ]; then
     # Setting ACCOUNT and QUEUE for MN5
     ACCOUNT="bsc08"
     QUEUE="gp_debug" # gp_bscls
+    PPN=112
 elif [ "$CLUSTER_NAME" == "nord4" ]; then
     MACHINE="slurm"
     # Setting required modules for MN5
@@ -15,6 +16,7 @@ elif [ "$CLUSTER_NAME" == "nord4" ]; then
     # Setting ACCOUNT and QUEUE for Nord4
     ACCOUNT="bsc08"
     QUEUE="bsc_ls"
+    PPN=48
 elif [ "$CLUSTER_NAME" == "elastic" ]; then
     MACHINE="slurm"
     # Clear LOAD_MODULES for elastic cluster
@@ -24,6 +26,7 @@ elif [ "$CLUSTER_NAME" == "elastic" ]; then
     # Clear ACCOUNT and QUEUE to trigger the memory-based allocation
     ACCOUNT=""
     QUEUE=""
+    PPN=8
 else
     MACHINE="linux"
     # Clear LOAD_MODULES for single linux machine
@@ -31,6 +34,7 @@ else
     # Clear ACCOUNT and QUEUE for linux single machine
     ACCOUNT=""
     QUEUE=""
+    PPN=12
 fi
 
 # Echo the configuration for debugging purposes

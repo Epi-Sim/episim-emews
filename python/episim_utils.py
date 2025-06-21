@@ -164,7 +164,7 @@ def compute_observables(sim_xa, instance_folder, data_folder, **kwargs):
 
     observable_labels = ['A', 'I', 'D']
 
-    config_fname = os.path.join(instance_folder, "config.json")
+    config_fname = os.path.join(instance_folder, "episim_config.json")
 
     with open(config_fname) as fh:
         config_dict = json.load(fh)

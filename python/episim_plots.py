@@ -23,7 +23,7 @@ def plot_epivariables(
                         excluded_regions = ["51", "52"]
                         ):
     
-    config_fname = os.path.join(instance_folder, "config.json")
+    config_fname = os.path.join(instance_folder, "episim_config.json")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
 

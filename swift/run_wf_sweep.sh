@@ -27,7 +27,7 @@ BASE_DATA_FOLDER=$2
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON=$3
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
+CONFIG_JSON="${TURBINE_OUTPUT}/episim_config.json"
 
 BASE_WORKFLOW_CONFIG=$4
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
@@ -60,7 +60,7 @@ setup_experiment $WORKFLOW_TYPE
 # Computing Resources
 
 export PROCS=12
-export PPN
+export PPN=$PROCS
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

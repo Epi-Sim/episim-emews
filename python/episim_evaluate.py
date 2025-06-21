@@ -35,7 +35,7 @@ def fit_epicurves(
     sim_ds : xarray.Dataset
         Simulated epidemic data including time (`T`) and variables such as 'new_infected', 'new_hospitalized', 'new_deaths'.
     instance_folder : str
-        Path to the simulation instance folder containing the 'config.json' file.
+        Path to the simulation instance folder containing the 'episim_config.json' file.
     data_folder : str
         Path to the folder containing observational data files like 'real_observables.nc' and 'rosetta.csv'.
     epivar : str, default="new_deaths"
@@ -60,7 +60,7 @@ def fit_epicurves(
     """
 
     # Load simulation configuration
-    config_path = os.path.join(instance_folder, "config.json")
+    config_path = os.path.join(instance_folder, "episim_config.json")
     with open(config_path) as fh:
         config_dict = json.load(fh)
 

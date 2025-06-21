@@ -16,7 +16,7 @@ set -eu
 
 if [ "$#" -ne 7 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4/linux)"
   exit 1
 fi
 
@@ -27,7 +27,7 @@ BASE_DATA_FOLDER=$2
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON=$3
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
+CONFIG_JSON="${TURBINE_OUTPUT}/episim_config.json"
 
 BASE_WORKFLOW_CONFIG=$4
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
@@ -44,12 +44,6 @@ if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     exit 1;
 fi
 
-# Parameters for the DEAP ALGORITHM GA/CMA
-ITERATIONS=3
-NUM_POPULATION=4
-SEED=1234
-SIGMA=1
-NUM_OBJECTIVES=1
 
 #################################################################
 
@@ -76,11 +70,18 @@ WORKFLOW_TYPE="DEAP"
 setup_experiment $WORKFLOW_TYPE
 
 #################################################################
+# Parameters for the DEAP ALGORITHM GA/CMA
+ITERATIONS=${ITERATIONS:-3}
+NUM_POPULATION=${NUM_POPULATION:-8}
+SEED=1234
+SIGMA=1
+NUM_OBJECTIVES=1
+
 
 # Computing Resources and turbine params
 
-export PROCS=5
-export PPN=$PROCS
+export PROCS="${PROCS:-8}"
+export PPN=${PPN:-8}
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

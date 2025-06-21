@@ -25,5 +25,5 @@ string collect_metrics_path = emews_root + "/scripts/collect_metrics.py";
 string data_path  = turbine_output + "/data";
 
 // Default base names for the model config file and the output folder
-string base_config_name   = "config.json";
+string base_config_name   = "episim_config.json";
 string base_output_folder = "output";

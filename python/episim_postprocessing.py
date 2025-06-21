@@ -39,12 +39,13 @@ def _aggregate_patches(sim_xa, patch_mapping=None):
     new_coords["M"] =  list(patch_mapping)
     return xr.DataArray(data=data, coords=new_coords, dims=sim_xa.dims)
 
-def aggregate_patches(sim_ds, instance_folder, data_folder, mapping_fname=None, **kwargs):
+def aggregate_patches(sim_ds, instance_folder, data_folder, mapping_fname="rosetta.csv", **kwargs):
     patch_mapping = None
     mapping_fname = os.path.join(data_folder, mapping_fname)
     if os.path.exists(mapping_fname):
-        with open(mapping_fname) as fh:
-            patch_mapping = json.load(fh)
+        df = pd.read_csv(mapping_fname, dtype=str)
+        patch_mapping = {i: df.loc[df["level_2"]==i, "level_1"].tolist() for i in df["level_2"].unique()}
+
 
     data_vars = {}
     for var in sim_ds:
@@ -57,7 +58,7 @@ def scale_by_population(sim_ds, instance_folder, data_folder, level='prov_age', 
 
      #The data has to be in xarray.DataSet format
     
-    config_fname = os.path.join(instance_folder, "config.json")
+    config_fname = os.path.join(instance_folder, "episim_config")
     with open(config_fname) as fh:
         config_dict = json.load(fh)
 

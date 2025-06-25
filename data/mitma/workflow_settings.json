@@ -42,7 +42,11 @@
 		"input_fname": "obs_agg.nc",
 		"parameters":{
 			"obsdata_fname": "real_observables.nc",
-			"epi_variable":  "new_deaths",
+			"epivariable_weights": {
+                "new_infected":0.0, 
+                "new_hospitalized": 0.01, 
+                "new_deaths":0.99
+            },
 			"agg_level" : "level_2",
             "metric": "rmse",
             "smooth_obs": true,

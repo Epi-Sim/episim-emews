@@ -1,4 +1,6 @@
 #! /usr/bin/env bash
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging

@@ -69,15 +69,11 @@ config_out_fname   = '%s'
 params_strn        = '%s'
 
 params_strn = params_strn.replace("'", '"')
-update_dict = json.loads(params_strn)
+param_dict = json.loads(params_strn)
 
-with open(config_base_fname, encoding='utf-8') as fh:
-    config_base = json.load(fh)
-
-config_dict = episim_utils.update_params(config_base, update_dict)
-
-with open(config_out_fname, 'w', encoding='utf-8') as fh:
-    json.dump(config_dict, fh, indent=4, ensure_ascii=False)
+episim_config = episim_utils.EpiSimConfig.from_json(config_base_fname)
+episim_config.update_params_from_flat_dict(param_dict)
+episim_config.to_json(config_out_fname)
 """;
 (void o) create_config(string cfg_base, string cfg_out, string strn_params) {
     string code = update_json_template % (cfg_base, cfg_out, strn_params);

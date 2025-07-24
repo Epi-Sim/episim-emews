@@ -1,4 +1,6 @@
 #! /usr/bin/env bash
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
@@ -16,7 +18,7 @@ set -eu
 
 if [ "$#" -ne 7 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4)"
+  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1) DATA_FOLDER CONFIG_JSON WORKFLOW_JSON PARAMS_DEAP STRATEGY MACHINE_NAME (mn5/nord4/linux)"
   exit 1
 fi
 
@@ -45,11 +47,13 @@ if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
 fi
 
 # Parameters for the DEAP ALGORITHM GA/CMA
-ITERATIONS=3
-NUM_POPULATION=5
-SEED=1234
-SIGMA=1
-NUM_OBJECTIVES=1
+# TODO expose those values on the script
+ITERATIONS="${ITERATIONS:-2}"
+NUM_POPULATION="${NUM_POPULATION:-5}"
+SEED="${SEED:-1234}"
+SIGMA="${SIGMA:-1}"
+NUM_OBJECTIVES="${NUM_OBJECTIVES:-1}"
+
 
 #################################################################
 
@@ -79,8 +83,9 @@ setup_experiment $WORKFLOW_TYPE
 
 # Computing Resources and turbine params
 
-export PROCS=8
-export PPN
+export PROCS=${PROCS:-"8"}
+export PPN=${PPN:-"8"}
+export MEM=${MEM:-"12G"}
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

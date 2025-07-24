@@ -29,7 +29,7 @@ BASE_DATA_FOLDER=$2
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON=$3
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
+CONFIG_JSON="${TURBINE_OUTPUT}/episim_config.json"
 
 BASE_WORKFLOW_CONFIG=$4
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
@@ -45,15 +45,6 @@ if ([ ${STRATEGY} != "deap_ga" ] && [ ${STRATEGY} != "deap_cmaes" ]); then
     echo "Incorrect Strategy ${STRATEGY}. Posible optiones a deap_ga and deap_cmaes"
     exit 1;
 fi
-
-# Parameters for the DEAP ALGORITHM GA/CMA
-# TODO expose those values on the script
-ITERATIONS="${ITERATIONS:-2}"
-NUM_POPULATION="${NUM_POPULATION:-5}"
-SEED="${SEED:-1234}"
-SIGMA="${SIGMA:-1}"
-NUM_OBJECTIVES="${NUM_OBJECTIVES:-1}"
-
 
 #################################################################
 
@@ -80,6 +71,13 @@ WORKFLOW_TYPE="DEAP"
 setup_experiment $WORKFLOW_TYPE
 
 #################################################################
+# Parameters for the DEAP ALGORITHM GA/CMA
+ITERATIONS="${ITERATIONS:-2}"
+NUM_POPULATION="${NUM_POPULATION:-5}"
+SEED="${SEED:-1234}"
+SIGMA="${SIGMA:-1}"
+NUM_OBJECTIVES="${NUM_OBJECTIVES:-1}"
+
 
 # Computing Resources and turbine params
 

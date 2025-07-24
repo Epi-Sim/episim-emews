@@ -16,7 +16,7 @@ def fit_epicurves(
     instance_folder,
     data_folder,
     obsdata_fname="real_observables.nc",
-    epi_variable="new_deaths",
+    epivariable_weights={"new_deaths": 1},
     metric="rmse",
     smooth_obs=True,
     scale_by_pop=True,
@@ -35,7 +35,7 @@ def fit_epicurves(
     sim_ds : xarray.Dataset
         Simulated epidemic data including time (`T`) and variables such as 'new_infected', 'new_hospitalized', 'new_deaths'.
     instance_folder : str
-        Path to the simulation instance folder containing the 'config.json' file.
+        Path to the simulation instance folder containing the 'episim_config.json' file.
     data_folder : str
         Path to the folder containing observational data files like 'real_observables.nc' and 'rosetta.csv'.
     epivar : str, default="new_deaths"
@@ -60,7 +60,7 @@ def fit_epicurves(
     """
 
     # Load simulation configuration
-    config_path = os.path.join(instance_folder, "config.json")
+    config_path = os.path.join(instance_folder, "episim_config.json")
     with open(config_path) as fh:
         config_dict = json.load(fh)
 
@@ -90,8 +90,10 @@ def fit_epicurves(
     # Align time and space
     obs_ds, sim_ds = xr.align(obs_ds, sim_ds)
 
-    if epi_variable not in varlist:
-        raise ValueError(f"Unsupported epivar: {epi_variable}. Use: ", varlist)
+    for k in epivariable_weights:
+        if k in varlist:
+            continue
+        raise ValueError(f"Unsupported epivar: {k}. Use: ", varlist)
 
     # Load population data
     pop_fname = config_dict["data"]["metapopulation_data_filename"]
@@ -123,12 +125,17 @@ def fit_epicurves(
 
     # Return the summed metric for the specified epidemic variable
     if agg_func == "sum":
-        return float(cost_ds[epi_variable].sum())
+        cost_ds = cost_ds.sum()
     elif agg_func == "mean":
-        return float(cost_ds[epi_variable].mean())
+        cost_ds = cost_ds.mean()
     else:
         raise ValueError(f"Unsupported agg_func: {agg_func}. Use 'sum' or 'mean'.")
 
+    cost = 0
+    for k,v in epivariable_weights.items():
+        cost += float(cost_ds[k] * v)
+
+    return cost
 
 
 def dummy_evaluate(simdata_ds, instance_folder, data_folder, **kwargs):

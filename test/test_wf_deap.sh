@@ -1,65 +1,26 @@
+# Base folder
+EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
+
+# Path to required files
+DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/mitma"
+EPISIM_CONFIG="${DATA_FOLDER}/episim_config.json"
+WORKFLOW_CONFIG="${DATA_FOLDER}/workflow_settings.json"
+DEAP_CONFIG="${DATA_FOLDER}/deap_parameters.json"
+
+# Strategy for the evolutionary algorithm GA/CMA-ES
 STRATEGY="deap_cmaes"
-EXPID="test_${STRATEGY}_mo"
 
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-export PYTHONPATH="${PYTHONPATH}:"${EMEWS_PROJECT_ROOT}/python""
-export PYTHONPATH="${PYTHONPATH}:"${EMEWS_PROJECT_ROOT}/ext/EQ-Py""
-export EQPY="$EMEWS_PROJECT_ROOT/ext/EQ-Py"
-export DEBUG_MODE=2
+# Experiment ID
+EXPID="test_${STRATEGY}"
 
-# source some utility functions used by EMEWS in this script
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+# Machine
+MACHINE=linux
 
+# Path to the script to lunch the workflow
+COMMAND="${EMEWS_PROJECT_ROOT}/swift/run_wf_deap.sh"
 
+# needed to overwrite the default from the bash lunch scripts
+export PROCS=12
 
-#################################################################
-
-BASE_DATA_FOLDER="${EMEWS_PROJECT_ROOT}/data/test"
-DATA_FOLDER="${TURBINE_OUTPUT}/data"
-
-BASE_CONFIG_JSON="${BASE_DATA_FOLDER}/config_MMCACovid19.json"
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
-
-BASE_WORKFLOW_CONFIG="${BASE_DATA_FOLDER}/workflow_settings.json"
-WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
-
-BASE_PARAMS_DEAP="${BASE_DATA_FOLDER}/deap_epiparams_wide_age.json"
-PARAMS_DEAP="${TURBINE_OUTPUT}/deap_epiparams.json"
-
-#################################################################
-
-WORKFLOW_TYPE="DEAP"
-setup_experiment $WORKFLOW_TYPE
-
-if [ ! -f "${BASE_PARAMS_DEAP}" ]; then
-    echo "Sweep file ${BASE_PARAMS_DEAP} does not exist"
-    exit;
-fi
-
-echo "Copying base deap params file into turbine output"
-cp ${BASE_PARAMS_DEAP} ${PARAMS_DEAP}
-
-# Resident task workers and ranks
-export PROCS=5
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
-
-# Parameters for DEAP algorithm
-GENERATIONS=5
-POPULATION=5
-SEED=1234
-SIGMA=1
-NUM_OBJECTIVES=2
-
-SWIFT_PATH="${EMEWS_PROJECT_ROOT}/swift"
-SWIFT_EXE="${SWIFT_PATH}/run_wf_deap.swift"
-
-# Setting the command line
-CMD_LINE_ARGS="-d=${DATA_FOLDER} -c=${CONFIG_JSON} -w=${WORKFLOW_CONFIG}
-                -me_algo=${STRATEGY}  -ea_params=${PARAMS_DEAP}
-                -np=${POPULATION}  -ni=${GENERATIONS}  -seed=${SEED}  -sigma=${SIGMA}
-                -nobjs=${NUM_OBJECTIVES}"
-
-
-swift-t -p -n $PROCS -I $EQPY -r $EQPY -I $SWIFT_PATH  $SWIFT_EXE  $CMD_LINE_ARGS
+# Lunch the workflow!
+bash $COMMAND $EXPID $DATA_FOLDER $EPISIM_CONFIG $WORKFLOW_CONFIG $DEAP_CONFIG $STRATEGY $MACHINE

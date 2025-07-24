@@ -1,10 +1,14 @@
 import os
 import json
+import copy
 import numpy as np
 import pandas as pd
 
 import pandas as pd
 import xarray as xr
+
+from pathlib import Path
+from typing import Any, Dict
 
 
 class Metapopulation:
@@ -63,6 +67,186 @@ class Metapopulation:
 
         return df
 
+class EpiSimConfig:
+    def __init__(self, template: dict, group_suffix="ᵍ"):
+        self._base_template = copy.deepcopy(template)
+        self.config = copy.deepcopy(template)
+
+        self._group_suffix = group_suffix
+        # Extract demographic group labels (e.g., Y, M, O)
+        self.group_labels = self._get_nested(["population_params", "G_labels"])
+        self.group_size = len(self.group_labels)
+
+        # Automatically detect all parameters that are group-dependent
+        self.group_params = self._detect_group_params()
+
+    @classmethod
+    def from_json(cls, json_path: str) -> 'EpidemicConfig':
+        with open(json_path, 'r', encoding='utf-8') as f:
+            template = json.load(f)
+        return cls(template)
+
+    def validate(self, verbose: bool = True):
+        required_keys = {
+            "simulation": ["engine", "start_date", "end_date"],
+            "data": ["initial_condition_filename", "metapopulation_data_filename"],
+            "epidemic_params": [],
+            "population_params": ["G_labels", "C", "kᵍ", "kᵍ_h", "kᵍ_w", "pᵍ"],
+            "NPI": ["κ₀s", "ϕs", "δs", "tᶜs", "are_there_npi"]
+        }
+
+        errors = []
+
+        # Check required top-level and nested keys
+        for section, subkeys in required_keys.items():
+            if section not in self.config:
+                errors.append(f"Missing section: '{section}'")
+                continue
+            for key in subkeys:
+                if key not in self.config[section]:
+                    errors.append(f"Missing key: '{section}.{key}'")
+
+        # Check group-dependent parameters
+        for key_path, is_grouped in self.group_params.items():
+            if is_grouped:
+                try:
+                    value = self.get_param(key_path)
+                    if len(value) != self.group_size:
+                        errors.append(f"Length mismatch in '{key_path}': expected {self.group_size}, got {len(value)}")
+                except Exception as e:
+                    errors.append(f"Could not access group parameter '{key_path}': {e}")
+
+        if errors:
+            if verbose:
+                print("Validation errors:")
+                for err in errors:
+                    print("  -", err)
+            raise ValueError(f"Configuration validation failed with {len(errors)} error(s).")
+        elif verbose:
+            print("Configuration is valid.")
+
+
+    def to_json(self, output_path: str):
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(self.config, f, indent=4, ensure_ascii=False)
+
+    def reset(self):
+        self.config = copy.deepcopy(self._base_template)
+
+    def _get_nested(self, keys: list) -> Any:
+        d = self.config
+        for k in keys:
+            d = d[k]
+        return d
+
+    def _set_nested(self, keys: list, value: Any):
+        d = self.config
+        for k in keys[:-1]:
+            d = d.setdefault(k, {})
+        d[keys[-1]] = value
+
+    def _detect_group_params(self) -> Dict[str, bool]:
+        def recurse(d, prefix=""):
+            result = {}
+            for k, v in d.items():
+                path = f"{prefix}.{k}" if prefix else k
+                if (
+                    isinstance(v, list)
+                    and len(v) == self.group_size
+                    and all(isinstance(x, (float, int)) for x in v)
+                ):
+                    result[path] = True
+                elif isinstance(v, dict):
+                    result.update(recurse(v, path))
+            return result
+
+        return recurse(self.config)
+
+    def is_group_param(self, key_path: str) -> bool:
+        return self.group_params.get(key_path, False)
+
+    def update_param(self, key_path: str, value: Any):
+        """
+        Update a parameter, automatically handling group/single values based on detection
+        """
+        keys = key_path.split(".")
+        is_grouped = self.is_group_param(key_path)
+
+        if is_grouped:
+            if not (isinstance(value, list) and len(value) == self.group_size):
+                raise ValueError(f"Expected a list of length {self.group_size} for group-dependent parameter '{key_path}'")
+        else:
+            if isinstance(value, list):
+                raise ValueError(f"Expected a scalar for scalar parameter '{key_path}'")
+
+        self._set_nested(keys, value)
+
+    def get_param(self, key_path: str) -> Any:
+        keys = key_path.split(".")
+        return self._get_nested(keys)
+
+    def inject(self, updates: Dict[str, Any]):
+        for key_path, value in updates.items():
+            self.update_param(key_path, value)
+
+    def update_group_param(self, key_path: str, group_label: str, value: float):
+        """
+        Update a single group-specific value inside a vector (e.g. change γᵍ for group 'M')
+        """
+        if not self.is_group_param(key_path):
+            raise ValueError(f"Parameter '{key_path}' is not detected as group-dependent.")
+
+        if group_label not in self.group_labels:
+            raise ValueError(f"Group label '{group_label}' not in G_labels: {self.group_labels}")
+
+        param_vector = self.get_param(key_path)
+        group_index = self.group_labels.index(group_label)
+        param_vector[group_index] = value
+        self.update_param(key_path, param_vector)
+
+    def get_group_param(self, key_path: str, group_label: str) -> float:
+        if not self.is_group_param(key_path):
+            raise ValueError(f"Parameter '{key_path}' is not detected as group-dependent.")
+
+        if group_label not in self.group_labels:
+            raise ValueError(f"Group label '{group_label}' not in G_labels: {self.group_labels}")
+
+        param_vector = self.get_param(key_path)
+        group_index = self.group_labels.index(group_label)
+        return param_vector[group_index]
+
+    def inject_group_vector(self, key_path: str, values_by_group: Dict[str, float]):
+        if not self.is_group_param(key_path):
+            raise ValueError(f"Parameter '{key_path}' is not group-dependent.")
+
+        new_vector = self.get_param(key_path)
+        for group_label, value in values_by_group.items():
+            if group_label not in self.group_labels:
+                raise ValueError(f"Group label '{group_label}' not in G_labels: {self.group_labels}")
+            index = self.group_labels.index(group_label)
+            new_vector[index] = value
+        self.update_param(key_path, new_vector)
+
+    def update_params_from_flat_dict(self, param_set: Dict[str, float]):
+        for param, value in param_set.items():
+            if self._group_suffix in param:
+                # e.g., 'γᵍ1' → base='γᵍ', group='1'
+                try:
+                    base, group_id = param.rsplit(self._group_suffix, 1)
+                    base += self._group_suffix  # put back the suffix
+                    if group_id.isdigit():
+                        group_index = int(group_id)
+                        self.update_group_param(base, group_index, value)
+                    elif group_id in self.get_param("population_params.G_labels"):
+                        self.update_group_param(base, group_id, value)
+                    else:
+                        raise ValueError(f"Unrecognized group label/index '{group_id}' in param '{param}'")
+                except Exception as e:
+                    raise ValueError(f"Failed to parse grouped param '{param}': {e}")
+            else:
+                self.update_param(param, value)
+
+
 
 def update_params(params_dict, update_dict, G=3):
     
@@ -115,6 +299,10 @@ def update_params(params_dict, update_dict, G=3):
     
     if "γᵍY" in update_dict:
         params_dict["epidemic_params"]["γᵍ"][0] = update_dict["γᵍY"]
+    if "γᵍM" in update_dict:
+        params_dict["epidemic_params"]["γᵍ"][1] = update_dict["γᵍM"]
+    if "γᵍO" in update_dict:
+        params_dict["epidemic_params"]["γᵍ"][2] = update_dict["γᵍO"]
     #arreglar esto
     if "ϕs" in update_dict:
         if isinstance(update_dict["ϕs"],list):
@@ -164,7 +352,7 @@ def compute_observables(sim_xa, instance_folder, data_folder, **kwargs):
 
     observable_labels = ['A', 'I', 'D']
 
-    config_fname = os.path.join(instance_folder, "config.json")
+    config_fname = os.path.join(instance_folder, "episim_config.json")
 
     with open(config_fname) as fh:
         config_dict = json.load(fh)
@@ -199,8 +387,3 @@ def compute_observables(sim_xa, instance_folder, data_folder, **kwargs):
     sim_observables_xa.loc['D',:] = np.diff(sim_observables_xa.loc['D',:], prepend =0)
     
     return sim_observables_xa
-
-  
-
-
-

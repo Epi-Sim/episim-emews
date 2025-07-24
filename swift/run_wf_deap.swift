@@ -47,7 +47,7 @@ string r_ranks[]      = split(resident_ranks,",");
         string finals =  EQPy_get(ME);
         string fname = "%s/final_result" % (turbine_output);
         file results_file <fname> = write(finals) =>
-        printf("Writing final result to %s", fname) =>
+        printf("- Writing final result to %s", fname) =>
         v = make_void() =>
         c = false;
     }
@@ -85,7 +85,6 @@ string r_ranks[]      = split(resident_ranks,",");
         o = propagate();
     }
 }
-
 
 //===================================
 // WORFLOW STARTS HERE
@@ -132,20 +131,19 @@ check_requirements() => {
   printf("=================================================") =>
   printf("- Beginning Model exploration!") =>
   
+  string me_algo_params;
   if (me_algo == "deap_ga"){
-    string me_algo_params = "%d,%d,%d,'%s',%d" %  (iterations, population, seed, ea_params_fname, num_objs) => {
-      int rank = string2int(r_ranks[0]) => {
-        start(rank, me_algo, me_algo_params) =>
-          printf("- Finshed Computation");
-      }
-    }
+    me_algo_params = "%d,%d,%d,'%s',%d" %  (iterations, population, seed, ea_params_fname, num_objs);
   }
   else if (me_algo == "deap_cmaes"){
-    string me_algo_params = "%d,%d,%d,%d,'%s',%d" %  (iterations, population, sigma, seed, ea_params_fname, num_objs) => {
-      int rank = string2int(r_ranks[0]) => {
-        start(rank, me_algo, me_algo_params) =>
-          printf("- Finshed Computation");
-      }
+    me_algo_params = "%d,%d,%d,%d,'%s',%d" %  (iterations, population, sigma, seed, ea_params_fname, num_objs);
+  }
+  int rank = string2int(r_ranks[0]) =>
+  wait(me_algo_params) {
+    void done = start(rank, me_algo, me_algo_params);
+    wait(done) {
+      printf("- Finshed Computation") =>
+      collect_metrics(collect_metrics_path);
     }
   }
 }

@@ -18,12 +18,12 @@ int    debug_mode     = string2int(getenv("DEBUG_MODE"));
 string model_sh   = emews_root + "/scripts/run-episim.sh";
 string model_exec = emews_root + "/model/episim";
 
-// string model_path = emews_root + "/model/EpiSim.jl";
-// string model_exec = "julia --project=" model_path + " " + model_path + "/src/run.jl";
+// Path to the script that collect metrics
+string collect_metrics_path = emews_root + "/scripts/collect_metrics.py";
 
 // Absolute path to files required by the model
 string data_path  = turbine_output + "/data";
 
 // Default base names for the model config file and the output folder
-string base_config_name   = "config.json";
+string base_config_name   = "episim_config.json";
 string base_output_folder = "output";

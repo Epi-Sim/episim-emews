@@ -1,4 +1,6 @@
 #! /usr/bin/env bash
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
@@ -27,7 +29,7 @@ BASE_DATA_FOLDER=$2
 DATA_FOLDER="${TURBINE_OUTPUT}/data"
 
 BASE_CONFIG_JSON=$3
-CONFIG_JSON="${TURBINE_OUTPUT}/config.json"
+CONFIG_JSON="${TURBINE_OUTPUT}/episim_config.json"
 
 BASE_WORKFLOW_CONFIG=$4
 WORKFLOW_CONFIG="${TURBINE_OUTPUT}/workflow_settings.json"
@@ -60,7 +62,7 @@ setup_experiment $WORKFLOW_TYPE
 # Computing Resources
 
 export PROCS=12
-export PPN
+export PPN=$PROCS
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

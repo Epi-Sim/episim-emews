@@ -85,7 +85,7 @@ export PROCS=${PROCS:-"8"}
 export PPN=${PPN:-"8"}
 export MEM=${MEM:-"12G"}
 export PROJECT=${ACCOUNT}
-export WALLTIME=02:00:00
+export WALLTIME=${WALLTIME:-"02:00:00"}
 
 export TURBINE_JOBNAME="${EXPID}_job"
 export TURBINE_RESIDENT_WORK_WORKERS=1

@@ -276,6 +276,7 @@ def dummy_evaluate(simdata_ds, instance_folder, data_folder, **kwargs):
 evaluate_function_map = {
     "dummy_evaluate": dummy_evaluate,
     "fit_epicurves": fit_epicurves,
+    "fit_epicurves_global": fit_epicurves_global
 }
 
 def evaluate_obj(instance_folder, data_folder, workflow_config_fname):

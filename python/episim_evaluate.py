@@ -301,6 +301,9 @@ def evaluate_obj(instance_folder, data_folder, workflow_config_fname):
     sim_ds = xr.load_dataset(input_fname)
     
     cost = evaluate_function(sim_ds, instance_folder, data_folder, **parameters_dict)
+
+    if evaluation_dict.get("remove_input", None):
+        os.remove(input_fname)
         
     return cost
 

@@ -48,6 +48,8 @@ fi
 
 echo " === Step 2 Installing EpiSim.jl === "
 
+EPISIM_JL_GIT_REF="${EPISIM_JL_GIT_REF:-main}"
+
 if [ ! -d "model" ]; then
   mkdir model
 fi
@@ -60,6 +62,7 @@ echo " - Cloning EpiSim.jl"
 
 git clone https://github.com/Epi-Sim/EpiSim.jl.git
 cd EpiSim.jl/
+git checkout $EPISIM_JL_GIT_REF
 echo " - Installing EpiSim.jl dependencies"
 julia install.jl
 

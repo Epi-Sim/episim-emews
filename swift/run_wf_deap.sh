@@ -73,7 +73,7 @@ setup_experiment $WORKFLOW_TYPE
 #################################################################
 # Parameters for the DEAP ALGORITHM GA/CMA
 ITERATIONS="${ITERATIONS:-2}"
-NUM_POPULATION="${NUM_POPULATION:-5}"
+NUM_POPULATION="${NUM_POPULATION:-3}"
 SEED="${SEED:-1234}"
 SIGMA="${SIGMA:-1}"
 NUM_OBJECTIVES="${NUM_OBJECTIVES:-1}"
@@ -81,9 +81,9 @@ NUM_OBJECTIVES="${NUM_OBJECTIVES:-1}"
 
 # Computing Resources and turbine params
 
-export PROCS=${PROCS:-"8"}
+export PROCS=${PROCS:-"5"}
 export PPN=${PPN:-"8"}
-export MEM=${MEM:-"12G"}
+#export MEM=${MEM:-"12G"}
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

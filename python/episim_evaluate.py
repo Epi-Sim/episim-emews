@@ -107,6 +107,7 @@ def fit_epicurves(
         obs_ds = obs_ds / pop_da
         sim_ds = sim_ds / pop_da
 
+    epsilon = 1
     # Compute error metric
     if metric == "rmse":
         cost_ds = xs.rmse(obs_ds, sim_ds, dim="T")
@@ -114,6 +115,10 @@ def fit_epicurves(
         cost_ds = xs.mape(obs_ds, sim_ds+epsilon, dim="T")
     elif metric == "mae":
         cost_ds = xs.mae(obs_ds, sim_ds+epsilon, dim="T")
+    elif metric == "rmse_rel":
+        obs_ds = obs_ds + epsilon
+        sim_ds = sim_ds + epsilon
+        cost_ds = np.sqrt(((obs_ds - sim_ds)**2 / (obs_ds)).mean('T'))
     else:
         raise ValueError(f"Unsupported metric: {metric}. Use 'rmse', 'mape' or 'mae.")
 

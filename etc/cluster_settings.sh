@@ -34,7 +34,7 @@ else
     # Clear ACCOUNT and QUEUE for linux single machine
     ACCOUNT=""
     QUEUE=""
-    PPN=12
+    PPN=5
 fi
 
 # Echo the configuration for debugging purposes

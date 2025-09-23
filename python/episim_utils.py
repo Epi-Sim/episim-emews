@@ -327,8 +327,8 @@ def update_params(params_dict, update_dict, G=3):
         params_dict["data"]["initial_condition_filename"] = update_dict["initial_condition_filename"]
     
 
-    if "ϵᵍ" in update_dict:
-        params_dict["vaccination"]["ϵᵍ"] = update_dict["ϵᵍ"]
+    if "epsilon" in update_dict:
+        params_dict["vaccination"]["ϵᵍ"] = update_dict["epsilon"]
 
     if "percentage_of_vacc_per_day" in update_dict:
         params_dict["vaccination"]["percentage_of_vacc_per_day"] = update_dict["percentage_of_vacc_per_day"]

@@ -92,7 +92,8 @@ class EpiSimConfig:
             "data": ["initial_condition_filename", "metapopulation_data_filename"],
             "epidemic_params": [],
             "population_params": ["G_labels", "C", "kᵍ", "kᵍ_h", "kᵍ_w", "pᵍ"],
-            "NPI": ["κ₀s", "ϕs", "δs", "tᶜs", "are_there_npi"]
+            "NPI": ["κ₀s", "ϕs", "δs", "tᶜs", "are_there_npi"],
+            "vaccination": ["ϵᵍ", "percentage_of_vacc_per_day", "start_vacc", "dur_vacc"]
         }
 
         errors = []
@@ -327,8 +328,8 @@ def update_params(params_dict, update_dict, G=3):
         params_dict["data"]["initial_condition_filename"] = update_dict["initial_condition_filename"]
     
 
-    if "epsilon" in update_dict:
-        params_dict["vaccination"]["ϵᵍ"] = update_dict["epsilon"]
+    if "ϵᵍ" in update_dict:
+        params_dict["vaccination"]["ϵᵍ"] = update_dict["ϵᵍ"]
 
     if "percentage_of_vacc_per_day" in update_dict:
         params_dict["vaccination"]["percentage_of_vacc_per_day"] = update_dict["percentage_of_vacc_per_day"]

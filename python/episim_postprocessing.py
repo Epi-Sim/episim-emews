@@ -5,6 +5,7 @@ import pandas as pd
 import xarray as xr
 import xskillscore as xs
 import episim_utils
+import subprocess
 
 
 def _aggregate_patches(sim_xa, patch_mapping=None):
@@ -235,6 +236,21 @@ def compute_RMSEs(
 
     return sim_input
 
+def compute_pareto_points(sim_ds, instance_folder, data_folder, baseline_fname, **kwargs):
+    params_strn = f"-i {instance_folder} -d {data_folder} -b {baseline_fname}"
+    exec_path = "scripts/pareto_process_sim.jl"
+    command = f"julia --project=model/EpiSim.jl {exec_path} {params_strn}"
+    #remove_full_sim = kwargs.get("remove_full_sim", False)
+    subprocess.run(command, shell=True)
+    remove_full_sim = True
+    if remove_full_sim:
+        compartments_full_path = os.path.join(instance_folder, "output", "compartments_full.nc")
+        os.remove(compartments_full_path)
+
+    
+    return sim_ds
+
+
 def scale_by_population(sim_ds, instance_folder, data_folder, level='prov_age', scale=1e5, **kwargs):
 
      #The data has to be in xarray.DataSet format
@@ -302,7 +318,8 @@ postprocessing_map = {
     "dummy_postprocessing": dummy_postprocessing,
     "scale_by_population": scale_by_population,
     "aggregate_simulation": aggregate_patches,
-    "compute_RMSEs": compute_RMSEs
+    "compute_RMSEs": compute_RMSEs,
+    "compute_pareto_points": compute_pareto_points
 }
 
 def postprocess_obj(instance_folder, data_folder, workflow_config_fname):

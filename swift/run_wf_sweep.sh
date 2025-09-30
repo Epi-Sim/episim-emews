@@ -62,7 +62,7 @@ setup_experiment $WORKFLOW_TYPE
 # Computing Resources
 
 export PROCS=5
-export PPN=$PROCS
+export PPN=$PPN
 export PROJECT=${ACCOUNT}
 export WALLTIME=02:00:00
 

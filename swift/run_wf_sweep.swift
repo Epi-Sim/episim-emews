@@ -78,7 +78,8 @@ check_requirements() => {
       results[i] = run_obj(instance_dir, base_config, string_params);
     }
     wait (results) {
-      collect_metrics(collect_metrics_path);
+      //   collect_metrics(collect_metrics_path);
+       collect_pareto_points(collect_pareto_points_path);
     }
   }
 }

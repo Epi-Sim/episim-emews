@@ -21,6 +21,9 @@ string model_exec = emews_root + "/model/episim";
 // Path to the script that collect metrics
 string collect_metrics_path = emews_root + "/scripts/collect_metrics.py";
 
+// Path to the script that collect pareto points
+string collect_pareto_points_path = emews_root + "/scripts/collect_pareto_points.py";
+
 // Absolute path to files required by the model
 string data_path  = turbine_output + "/data";
 

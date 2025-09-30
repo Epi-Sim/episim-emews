@@ -39,6 +39,10 @@ app (void o) collect_metrics(string script_path) {
   "python" script_path turbine_output;
 }
 
+app (void o) collect_pareto_points(string script_path) {
+  "python" script_path turbine_output;
+}
+
 //========================================
 // FUNCTION TO EVALUATE A MODEL INSTANCE
 //========================================

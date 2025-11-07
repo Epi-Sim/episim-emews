@@ -77,7 +77,7 @@ setup_experiment() {
   fi
 
   echo "Copying base config file into turbine output"
-  cp ${BASE_CONFIG_JSON} ${CONFIG_JSON}
+  cp -R ${BASE_CONFIG_JSON} ${CONFIG_JSON}
   
   #################################################################
     

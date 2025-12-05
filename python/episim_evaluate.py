@@ -107,7 +107,7 @@ def fit_epicurves(
         obs_ds = obs_ds / pop_da
         sim_ds = sim_ds / pop_da
 
-    epsilon = 1
+    
     # Compute error metric
     if metric == "rmse":
         cost_ds = xs.rmse(obs_ds, sim_ds, dim="T")
@@ -116,6 +116,7 @@ def fit_epicurves(
     elif metric == "mae":
         cost_ds = xs.mae(obs_ds, sim_ds+epsilon, dim="T")
     elif metric == "rmse_rel":
+        epsilon = 1e-7
         obs_ds = obs_ds + epsilon
         sim_ds = sim_ds + epsilon
         cost_ds = np.sqrt(((obs_ds - sim_ds)**2 / (obs_ds)).mean('T'))

@@ -6,6 +6,7 @@ import xarray as xr
 import xskillscore as xs
 import episim_utils
 import subprocess
+from pathlib import Path
 
 
 def _aggregate_patches(sim_xa, patch_mapping=None):
@@ -238,8 +239,10 @@ def compute_RMSEs(
 
 def compute_pareto_points(sim_ds, instance_folder, data_folder, baseline_fname, **kwargs):
     params_strn = f"-i {instance_folder} -d {data_folder} -b {baseline_fname}"
-    exec_path = "scripts/pareto_process_sim.jl"
-    command = f"julia --project=model/EpiSim.jl {exec_path} {params_strn}"
+    project_folder = Path(__file__).parent.parent
+    exec_path = os.path.join(project_folder, "scripts","pareto_process_sim.jl")
+    julia_env = os.path.join(project_folder, "model", "EpiSim.jl")
+    command = f"julia --project={julia_env} {exec_path} {params_strn}"
     #remove_full_sim = kwargs.get("remove_full_sim", False)
     subprocess.run(command, shell=True)
     remove_full_sim = True

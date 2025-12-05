@@ -21,7 +21,7 @@ class Metapopulation:
         self._levels = []
 
         self._metapop_csv = metapop_csv
-        pop_df = pd.read_csv(self._metapop_csv, index_col="id")
+        pop_df = pd.read_csv(self._metapop_csv, index_col="id", dtype={'id': str})
         
         self._region_ids   = pop_df.index.tolist()
         self._region_areas = pop_df['area'].to_dict()

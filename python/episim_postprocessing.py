@@ -253,6 +253,71 @@ def compute_pareto_points(sim_ds, instance_folder, data_folder, baseline_fname, 
     
     return sim_ds
 
+def aggregate_simulation(sim_ds, data_folder, agg_level, mapping_fname = "rosetta.csv"):
+    rosetta_path = os.path.join(data_folder, mapping_fname)
+    if not os.path.exists(rosetta_path):
+        raise Exception(f"Missing file {rosetta_path} required to aggregate simulation output")
+    
+    rosetta = pd.read_csv(rosetta_path, dtype=str)
+    mapping = dict(zip(rosetta["level_1"], rosetta[agg_level] ))
+
+    sim_agg = sim_ds.assign_coords(
+    M_agg=("M", [mapping[m] for m in sim_ds.M.values])
+    )
+
+    sim_agg = (
+        sim_agg
+        .groupby("M_agg")
+        .sum(dim="M")
+        .rename({"M_agg": "M"})
+    )
+    return sim_agg
+
+def compute_epidemic_indicators(sim_ds, instance_folder, data_folder, agg_level, mapping_fname="rosetta.csv", 
+                                agg_by_pop=True, remove_full_sim=True, output_fname="indicators.nc", **kwargs):
+    
+    compartments_full_path = os.path.join(instance_folder, "output", "compartments_full.nc")
+    if not os.path.exists(compartments_full_path):
+        raise Exception(f"Missing file {compartments_full_path} required to compute epidemic indicators")
+      
+    full_sim = xr.load_dataset(compartments_full_path)
+
+    full_sim_agg = aggregate_simulation(full_sim, data_folder, agg_level, mapping_fname)
+
+    if agg_by_pop:
+        full_sim_agg = full_sim_agg.sum("G")
+
+    prevalence = (full_sim_agg["I"] + full_sim_agg["HD"] + full_sim_agg["HR"] +
+                  full_sim_agg["PH"] + full_sim_agg["PD"] + full_sim_agg["R"] +
+                  full_sim_agg["D"])
+
+    incidence = prevalence.diff(dim="T")
+    first_T_incidence = prevalence.sel(T="2020-02-09")
+    incidence = xr.concat([first_T_incidence, incidence], dim="T")
+
+    deaths = full_sim_agg["D"]
+
+    deaths_new = deaths.diff(dim="T")
+    first_T_deaths_new = deaths.sel(T="2020-02-09")
+    deaths_new = xr.concat([first_T_deaths_new, deaths_new], dim="T")
+
+    indicators_ds = xr.Dataset()
+    indicators_ds["deaths"] = deaths
+    indicators_ds["new_deaths"] = deaths_new
+    indicators_ds["prevalence"] = prevalence
+    indicators_ds["incidence"] = incidence
+    indicators_ds["T"] = pd.to_datetime(indicators_ds["T"].values)
+
+    output_path = os.path.join(instance_folder, "output", output_fname)
+    indicators_ds.to_netcdf(output_path)
+
+    if remove_full_sim:
+        compartments_full_path = os.path.join(instance_folder, "output", "compartments_full.nc")
+        os.remove(compartments_full_path)
+
+    return sim_ds
+
+
 
 def scale_by_population(sim_ds, instance_folder, data_folder, level='prov_age', scale=1e5, **kwargs):
 
@@ -322,7 +387,8 @@ postprocessing_map = {
     "scale_by_population": scale_by_population,
     "aggregate_simulation": aggregate_patches,
     "compute_RMSEs": compute_RMSEs,
-    "compute_pareto_points": compute_pareto_points
+    "compute_pareto_points": compute_pareto_points,
+    "compute_indicators": compute_epidemic_indicators
 }
 
 def postprocess_obj(instance_folder, data_folder, workflow_config_fname):

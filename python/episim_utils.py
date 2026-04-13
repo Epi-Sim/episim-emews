@@ -86,7 +86,7 @@ class EpiSimConfig:
 
     def validate(self, verbose: bool = True):
         required_keys = {
-            "simulation": ["engine", "start_date", "end_date"],
+            "simulation": ["engine", "start_date", "end_date", "scale_seeds"],
             "data": ["initial_condition_filename", "metapopulation_data_filename"],
             "epidemic_params": [],
             "population_params": ["G_labels", "C", "kᵍ", "kᵍ_h", "kᵍ_w", "pᵍ"],

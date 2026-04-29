@@ -116,12 +116,13 @@ def fit_epicurves(
     elif metric == "mae":
         cost_ds = xs.mae(obs_ds, sim_ds+epsilon, dim="T")
     elif metric == "rmse_rel":
-        epsilon = 1e-7
         obs_ds = obs_ds + epsilon
         sim_ds = sim_ds + epsilon
         cost_ds = np.sqrt(((obs_ds - sim_ds)**2 / (obs_ds)).mean('T'))
+    elif metric == "lse":
+        cost_ds = ((np.log(sim_ds + epsilon) - np.log(obs_ds + epsilon)) ** 2).mean(dim="T")
     else:
-        raise ValueError(f"Unsupported metric: {metric}. Use 'rmse', 'mape' or 'mae.")
+        raise ValueError(f"Unsupported metric: {metric}. Use 'rmse', 'mape', 'mae', 'rmse_rel' or 'lse'.")
 
     # Apply optional population-weighting to the error values
     if weight_by_population:
@@ -250,8 +251,10 @@ def fit_epicurves_global(
         cost_ds = xs.mape(obs_ds, sim_ds+epsilon, dim="T")
     elif metric == "mae":
         cost_ds = xs.mae(obs_ds, sim_ds+epsilon, dim="T")
+    elif metric == "lse":
+        cost_ds = ((np.log(sim_ds + epsilon) - np.log(obs_ds + epsilon)) ** 2).mean(dim="T")
     else:
-        raise ValueError(f"Unsupported metric: {metric}. Use 'rmse', 'mape' or 'mae.")
+        raise ValueError(f"Unsupported metric: {metric}. Use 'rmse', 'mape', 'mae' or 'lse'.")
 
     # Apply optional population-weighting to the error values
     if weight_by_population:
